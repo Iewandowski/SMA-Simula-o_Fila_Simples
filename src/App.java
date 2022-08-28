@@ -1,69 +1,41 @@
-import java.util.Random;
+import java.util.Scanner;
+import java.text.DecimalFormat;
 
 public class App {
-    public int fila = 0;
-    public int K;
-    public int servidores;
-    public float T;
-    public float tempo_cliente;
-
-    public App(int servidores, int K) {
-        this.K = K;
-        this.servidores = servidores;
-    }
-
-    public void setTempoCliente(float tempo) {
-        this.tempo_cliente = tempo;
-    }
-
-    public float getTempoCliente() {
-        return this.tempo_cliente;
-    }
-
-    public float getT() {
-        return this.T;
-    }
-
-    public void setT(float T) {
-        this.T = T;
-    }
-
-    public void chegada(float T) {
-        if (fila < K) {
-            fila++;
-            if (fila <= servidores) {
-                saida(T + 1); // TROCAR 1 POR NUMERO RANDOM(3,6)
-            }
-        }
-    }
-
-    public void saida(float T) {
-        setTempoCliente(T);
-        fila--;
-        if (fila >= servidores) {
-            saida(T + 1); // TROCAR 1 POR NUMERO RANDOM(3,6)
-        }
-    }
 
     public static void main(String[] args) throws Exception {
-        // ler e setar dados:
-        // - intervalo de tempo para a chegada de clientes na fila;
-        // - intervalo de tempo de atendimento de um cliente na fila;
-        // - número de servidores
-        // - capacidade da fila
+        DecimalFormat format = new DecimalFormat("0.00");
+        Scanner scanner = new Scanner(System.in);
 
-        App app = new App(1, 3);
-        app.setT(3); // primeiro cliente chega no tempo 3,0
+        // ler intervalo de tempo para a chegada de clientes na fila:
+        System.out.print("Digite o intervalo de tempo para a chegada de cliente: (numero,numero) ");
+        String intervalo_chegada = scanner.next();
+
+        // ler intervalo de tempo de atendimento de um cliente na fila:
+        System.out.print("Digite o intervalo de tempo de atendimento para um cliente: (numero,numero) ");
+        String intervalo_atendimento = scanner.next();
+
+        // ler número de servidores:
+        System.out.print("Digite o número de servidores: ");
+        int servidores = scanner.nextInt();
+
+        // ler a capacidade da fila:
+        System.out.print("Digite a capacidade da fila: ");
+        int K = scanner.nextInt();
+        scanner.close();
+
+        FilaSimples filaSimples = new FilaSimples(intervalo_chegada, intervalo_atendimento, servidores, K);
+        filaSimples.setT(3); // primeiro cliente chega no tempo 3.0
 
         for (int i = 0; i < 6; i++) {
             float tempo;
             if (i == 0) {
-                tempo = app.getT();
+                tempo = filaSimples.getT();
             } else {
-                tempo = app.getTempoCliente();
+                tempo = filaSimples.getTempoCliente();
             }
-            app.chegada(tempo);
-            System.out.println("Tempo do cliente " + i + ": " + app.getTempoCliente());
+            filaSimples.chegada(tempo);
+            System.out.println("Tempo do cliente " + i + ": " + format.format(filaSimples.getTempoCliente()));
         }
     }
 }
