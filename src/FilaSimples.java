@@ -37,16 +37,21 @@ public class FilaSimples {
         if (fila < K) {
             fila++;
             if (fila <= servidores) {
-                saida(T + gerarRandom(intervalo_chegada));
+                float aux = gerarRandom(intervalo_chegada);
+                System.out.println("CHEGADA: " + aux);
+                saida(T + aux);
             }
         }
     }
 
     public void saida(float T) {
-        fila--;
         setTempoCliente(T);
         if (fila >= servidores) {
-            saida(T + gerarRandom(intervalo_atendimento));
+            float aux = gerarRandom(intervalo_atendimento);
+            System.out.println("SAIDA: " + aux);
+            fila--;
+            saida(T + aux);
+
         }
     }
 
