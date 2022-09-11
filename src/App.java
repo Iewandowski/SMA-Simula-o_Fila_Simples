@@ -26,16 +26,6 @@ public class App {
 
         FilaSimples filaSimples = new FilaSimples(intervalo_chegada, intervalo_atendimento, servidores, K);
         filaSimples.setT(3); // primeiro cliente chega no tempo 3.0
-
-        for (int i = 0; i < 6; i++) {
-            float tempo;
-            if (i == 0) {
-                tempo = filaSimples.getT();
-            } else {
-                tempo = filaSimples.getTempoCliente();
-            }
-            filaSimples.chegada(tempo);
-            System.out.println("Tempo do cliente " + i + ": " + format.format(filaSimples.getTempoCliente()));
-        }
+        filaSimples.fila();
     }
 }
