@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class FilaSimples {
-    public int fila = 0;
+    static public int fila = 0;
     public int K, servidores;
     public float tempo_cliente, T;
     String intervalo_chegada, intervalo_atendimento;
@@ -90,10 +90,11 @@ public class FilaSimples {
                 // setProximaSaida(aux);
                 agenda_saida.add(proxima_saida);
             }
+            float proxima_chegada = T + gerarRandom(intervalo_chegada);
+            setProximaChegada(proxima_chegada);
+            agenda_chegada.add(proxima_chegada);
         }
-        float proxima_chegada = T + gerarRandom(intervalo_chegada);
-        setProximaChegada(proxima_chegada);
-        agenda_chegada.add(proxima_chegada);
+
     }
 
     public void saida(float T) {
@@ -105,7 +106,7 @@ public class FilaSimples {
             aux_tempo = T - getTempoAnteriorSaida();
         }
         setTempoAnteriorSaida(aux_tempo);
-        System.out.println("TEMPO SAIDA: " + aux_tempo);
+        // System.out.println("TEMPO SAIDA: " + aux_tempo);
         setTempoGlobal(T);
         fila--;
         agenda_chegada.remove(0);
@@ -147,14 +148,43 @@ public class FilaSimples {
                 agendaChegada(2);
                 chegada(getT());
             }
+            System.out.println("--------------------");
             AgendaChegadaToString();
             AgendaSaidaToString();
-            System.out.println(getFila());
-            if (getProximaChegada() > agenda_saida.get(0)) {
+            System.out.println("--------------------");
+            // System.out.println(getFila());
+            if (verificaSaida() == true) {
                 saida(agenda_saida.get(0));
             } else {
-                chegada(getProximaChegada());
+                if (getFila() < this.K) {
+                    chegada(getProximaChegada());
+                }
+                /*
+                 * else {
+                 * float aux = agenda_chegada.get(agenda_chegada.indexOf(getProximaChegada()) +
+                 * 1);
+                 * setProximaChegada(aux);
+                 * }
+                 */
             }
         }
+    }
+
+    public boolean agendaChegadaIsEmpty() {
+        if (agenda_chegada.size() == this.K) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean verificaSaida() {
+        if (agendaChegadaIsEmpty() == false) {
+            if (getProximaChegada() > agenda_saida.get(0)) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+        return false;
     }
 }

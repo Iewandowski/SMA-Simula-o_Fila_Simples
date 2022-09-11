@@ -9,7 +9,7 @@ public class CongruenteLinear {
         int M = 397845;
         float Xi = 3;
         float Ui;
-        for (int i = 0; i <= 100000; i++) {
+        for (int i = 0; i <= 50; i++) {
             Xi = (a * Xi + c) % M;
             Ui = Xi / M;
             numeros_random.add(Ui);
