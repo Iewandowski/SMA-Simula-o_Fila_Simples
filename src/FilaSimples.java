@@ -10,15 +10,18 @@ public class FilaSimples {
     static int contador = 0;
     ArrayList<Float> agenda_chegada = new ArrayList<>();
     ArrayList<Float> agenda_saida = new ArrayList<>();
+    private float[] tempo_por_quantidade;
     private float tempo_global = 0;
     private float tempo_anterior_chegada = 0;
     private float tempo_anterior_saida = 0;
     private float proxima_chegada;
+    private int qntd_clientes = 0;
 
     public FilaSimples(String intervalo_chegada, String intervalo_atendimento, int servidores, int K) {
         this.intervalo_chegada = intervalo_chegada;
         this.intervalo_atendimento = intervalo_atendimento;
         this.K = K;
+        this.tempo_por_quantidade = new float[this.K + 1];
         this.servidores = servidores;
         cl.gerarNumeros();
         numeros_random = cl.getNumeros();
@@ -82,9 +85,14 @@ public class FilaSimples {
 
     public void chegada(float T) {
         setT(T);
+        float tempoAnteriorChegada = getTempoAnteriorChegada();
         setTempoAnteriorChegada(T);
-        if (fila < K) {
+        if (fila <= K) {
             fila++;
+            tempo_por_quantidade[qntd_clientes] += ( T - Math.max(tempoAnteriorChegada, getTempoAnteriorSaida()));
+            qntd_clientes++;
+            printaTempoTotalPorQuantidade();
+            setTempoGlobal(T);
             if (fila <= servidores) {
                 float proxima_saida = T + gerarRandom(intervalo_atendimento);
                 // setProximaSaida(aux);
@@ -94,23 +102,23 @@ public class FilaSimples {
             setProximaChegada(proxima_chegada);
             agenda_chegada.add(proxima_chegada);
         }
-
     }
 
     public void saida(float T) {
         float aux_tempo;
         setT(T);
-        if (getTempoAnteriorSaida() == 0) {
-            aux_tempo = T;
-        } else {
-            aux_tempo = T - getTempoAnteriorSaida();
-        }
+        aux_tempo = T;
+        tempo_por_quantidade[qntd_clientes] += ( T - Math.max(getTempoAnteriorChegada(),getTempoAnteriorSaida()));
+        System.out.println(agenda_chegada.size() + "tamanhooo");
+        qntd_clientes--;
+        System.out.println("TEMPO SAIDA: TESTE" + Math.max(getTempoAnteriorChegada(),getTempoAnteriorSaida()) + " -- " + T);
+        System.out.println("VAPO"+ fila);
         setTempoAnteriorSaida(aux_tempo);
-        // System.out.println("TEMPO SAIDA: " + aux_tempo);
         setTempoGlobal(T);
         fila--;
         agenda_chegada.remove(0);
         agenda_saida.remove(0);
+        printaTempoTotalPorQuantidade();
         if (fila >= servidores) {
             agenda_saida.add(T + gerarRandom(intervalo_atendimento));
         }
@@ -142,13 +150,24 @@ public class FilaSimples {
         }
     }
 
+    public void printaTempoTotalPorQuantidade() {
+        int index = 0;
+        for (float tempo_por_quantidade : tempo_por_quantidade) {
+            System.out.println("Tempo total com " + index + " clientes na fila: " + tempo_por_quantidade);
+            index ++;
+        }
+    }
+
     public void fila() {
         while (!numeros_random.isEmpty()) {
             if (agenda_chegada.isEmpty()) {
-                agendaChegada(2);
+                agendaChegada(3);
                 chegada(getT());
             }
             System.out.println("--------------------");
+            System.out.println("Tempo Global: " + tempo_global);
+            System.out.println("Ultima chegada: " + getTempoAnteriorChegada());
+            System.out.println("Ultima saída: " + getTempoAnteriorSaida());
             AgendaChegadaToString();
             AgendaSaidaToString();
             System.out.println("--------------------");
@@ -168,6 +187,8 @@ public class FilaSimples {
                  */
             }
         }
+        System.out.println(tempo_global + "tempo total");
+        // printaTempoTotalPorQuantidade();
     }
 
     public boolean agendaChegadaIsEmpty() {
