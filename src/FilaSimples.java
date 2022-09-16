@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class FilaSimples {
     static public int fila = 0;
@@ -24,8 +25,6 @@ public class FilaSimples {
         this.K = K;
         this.tempo_por_quantidade = new float[this.K + 1];
         this.servidores = servidores;
-        cl.gerarNumeros();
-        numeros_random = cl.getNumeros();
     }
 
     public float getTempoGlobal() {
@@ -74,6 +73,7 @@ public class FilaSimples {
 
     public void setT(float T) {
         this.T = T;
+        setTempoGlobal(T);
     }
 
     public int getFila() {
@@ -95,7 +95,6 @@ public class FilaSimples {
 
     public void chegada(float T) {
         setT(T);
-        setTempoGlobal(T);
         float tempoAnteriorChegada = getTempoAnteriorChegada();
         if (fila < K) {
             fila++;
@@ -103,6 +102,7 @@ public class FilaSimples {
             qntd_clientes++;
             chegada_fila.add(T);
             setTempoAnteriorChegada(T);
+            // printaTempoTotalPorQuantidade();
             // printaTempoTotalPorQuantidade();
             if (fila <= servidores) {
                 float proxima_saida = T + gerarRandom(intervalo_atendimento);
@@ -126,7 +126,7 @@ public class FilaSimples {
         // System.out.println(
         //         "TEMPO SAIDA: TESTE" + Math.max(getTempoAnteriorChegada(), getTempoAnteriorSaida()) + " -- " + T);
         setTempoAnteriorSaida(aux_tempo);
-        setTempoGlobal(T);
+        // printaTempoTotalPorQuantidade();
         fila--;
         chegada_fila.remove(0);
         agenda_saida.remove(0);
@@ -181,7 +181,11 @@ public class FilaSimples {
         }
     }
 
-    public void fila() {
+    public float[] fila(int numeroExecucao) {
+        Random geradorNumeros = new Random();
+        cl.gerarNumeros(geradorNumeros.nextInt(), geradorNumeros.nextInt(), geradorNumeros.nextInt());
+        numeros_random = cl.getNumeros();
+        System.out.println("Execucao numero: " + (numeroExecucao + 1));
         while (!numeros_random.isEmpty()) {
             if (agenda_chegada.isEmpty()) {
                 agendaChegada(3);
@@ -212,6 +216,7 @@ public class FilaSimples {
         printaTempoTotalPorQuantidade();
         System.out.println("--------------------");
         printaProbabilidadePorQntdClientes();
+        return tempo_por_quantidade;
     }
 
     public boolean agendaChegadaIsEmpty() {
