@@ -83,6 +83,18 @@ public class FilaSimples {
         this.fila = numero;
     }
 
+    public void zerarAlgoritmo(){
+        this.tempo_global = 0;
+        this.tempo_anterior_chegada = 0;
+        this.tempo_anterior_saida = 0;
+        this.proxima_chegada = 0;
+        this.qntd_clientes = 0;
+        this.fila = 0;
+        this.agenda_chegada = new ArrayList<>();
+        this.chegada_fila = new ArrayList<>();
+        this.agenda_saida = new ArrayList<>();
+    }
+
     public void agendarProximaChegada(){
         if(agenda_chegada.size() >= 1){
             agenda_chegada.remove(0);
@@ -181,8 +193,11 @@ public class FilaSimples {
     }
 
     public float[] fila(int numeroExecucao) {
+        if(numeroExecucao >= 1){
+            zerarAlgoritmo();
+        }
         Random geradorNumeros = new Random();
-        cl.gerarNumeros(geradorNumeros.nextInt(), geradorNumeros.nextInt(), geradorNumeros.nextInt());
+        cl.gerarNumeros(geradorNumeros.nextInt(100000) + 100, geradorNumeros.nextInt() + 100, geradorNumeros.nextInt()+100);
         numeros_random = cl.getNumeros();
         this.tempo_por_quantidade = new float[this.K + 1];
         System.out.println("Execucao numero: " + (numeroExecucao + 1));
