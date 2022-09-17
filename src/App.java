@@ -39,10 +39,9 @@ public class App {
     public static void calculaMediaExecucoes(ArrayList<float[]> tempo_execucao, int repeticoes) {
         System.out.println("TESTEE" +  tempo_execucao.get(0)[1] +  tempo_execucao.get(1)[1]);
         float[] tempo_por_execucao = new float[tempo_execucao.get(0).length];
-        for(int i = 0; i < repeticoes; i++){
-            for(int j = 0; j < tempo_execucao.get(0).length; j++){
-                System.out.println(tempo_execucao.get(i)[j] + "--------");
-                tempo_por_execucao[i] += tempo_execucao.get(i)[j];
+        for(int i = 0; i < tempo_execucao.get(0).length; i++){
+            for(int j = 0; j < repeticoes; j++){
+                tempo_por_execucao[i] += tempo_execucao.get(j)[i];
             }    
         }
         tempoExecucaoToString(tempo_por_execucao, repeticoes);

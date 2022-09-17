@@ -7,7 +7,6 @@ public class CongruenteLinear {
         // int a = 569;
         // int c = 571;
         // int M = 397845;
-        System.out.println(a + c + M + " TESTANDOO");
         float Xi = 3;
         float Ui;
         for (int i = 0; i <= 20; i++) {

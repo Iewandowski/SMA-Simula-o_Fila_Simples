@@ -197,7 +197,7 @@ public class FilaSimples {
             zerarAlgoritmo();
         }
         Random geradorNumeros = new Random();
-        cl.gerarNumeros(geradorNumeros.nextInt(100000) + 100, geradorNumeros.nextInt() + 100, geradorNumeros.nextInt()+100);
+        cl.gerarNumeros(Math.abs(geradorNumeros.nextInt(100000) + 100), Math.abs(geradorNumeros.nextInt(100000) + 100), Math.abs(geradorNumeros.nextInt(100000) + 100));
         numeros_random = cl.getNumeros();
         this.tempo_por_quantidade = new float[this.K + 1];
         System.out.println("Execucao numero: " + (numeroExecucao + 1));
