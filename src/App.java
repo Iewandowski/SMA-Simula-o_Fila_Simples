@@ -20,7 +20,7 @@ public class App {
         System.out.print("Digite o número de servidores: ");
         int servidores = scanner.nextInt();
 
-        int repeticoes = 5;
+        int repeticoes = 3;
 
         // ler a capacidade da fila:
         System.out.print("Digite a capacidade da fila: ");

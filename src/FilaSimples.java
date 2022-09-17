@@ -23,7 +23,6 @@ public class FilaSimples {
         this.intervalo_chegada = intervalo_chegada;
         this.intervalo_atendimento = intervalo_atendimento;
         this.K = K;
-        this.tempo_por_quantidade = new float[this.K + 1];
         this.servidores = servidores;
     }
 
@@ -185,6 +184,7 @@ public class FilaSimples {
         Random geradorNumeros = new Random();
         cl.gerarNumeros(geradorNumeros.nextInt(), geradorNumeros.nextInt(), geradorNumeros.nextInt());
         numeros_random = cl.getNumeros();
+        this.tempo_por_quantidade = new float[this.K + 1];
         System.out.println("Execucao numero: " + (numeroExecucao + 1));
         while (!numeros_random.isEmpty()) {
             if (agenda_chegada.isEmpty()) {
