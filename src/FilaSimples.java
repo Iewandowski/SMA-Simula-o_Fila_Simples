@@ -83,7 +83,7 @@ public class FilaSimples {
         this.fila = numero;
     }
 
-    public void zerarAlgoritmo(){
+    public void zerarAlgoritmo() {
         this.tempo_global = 0;
         this.tempo_anterior_chegada = 0;
         this.tempo_anterior_saida = 0;
@@ -95,8 +95,8 @@ public class FilaSimples {
         this.agenda_saida = new ArrayList<>();
     }
 
-    public void agendarProximaChegada(){
-        if(agenda_chegada.size() >= 1){
+    public void agendarProximaChegada() {
+        if (agenda_chegada.size() >= 1) {
             agenda_chegada.remove(0);
         }
         float proxima_chegada = T + gerarRandom(intervalo_chegada);
@@ -113,8 +113,6 @@ public class FilaSimples {
             qntd_clientes++;
             chegada_fila.add(T);
             setTempoAnteriorChegada(T);
-            // printaTempoTotalPorQuantidade();
-            // printaTempoTotalPorQuantidade();
             if (fila <= servidores) {
                 float proxima_saida = T + gerarRandom(intervalo_atendimento);
                 agenda_saida.add(proxima_saida);
@@ -122,9 +120,6 @@ public class FilaSimples {
             agendarProximaChegada();
         } else {
             agendarProximaChegada();
-            // float proxima_chegada = T + gerarRandom(intervalo_chegada);
-            // setProximaChegada(proxima_chegada);
-            // agenda_chegada.add(proxima_chegada);
         }
     }
 
@@ -134,15 +129,11 @@ public class FilaSimples {
         aux_tempo = T;
         tempo_por_quantidade[qntd_clientes] += (T - Math.max(getTempoAnteriorChegada(), getTempoAnteriorSaida()));
         qntd_clientes--;
-        // System.out.println(
-        //         "TEMPO SAIDA: TESTE" + Math.max(getTempoAnteriorChegada(), getTempoAnteriorSaida()) + " -- " + T);
         setTempoAnteriorSaida(aux_tempo);
-        // printaTempoTotalPorQuantidade();
         fila--;
         chegada_fila.remove(0);
         agenda_saida.remove(0);
-        // printaTempoTotalPorQuantidade();
-        if (fila >= servidores) { 
+        if (fila >= servidores) {
             agenda_saida.add(T + gerarRandom(intervalo_atendimento));
         }
     }
@@ -152,7 +143,7 @@ public class FilaSimples {
         String[] split = intervalo.split(",");
         int A = Integer.parseInt(split[0]);
         int B = Integer.parseInt(split[1]);
-        if(numeros_random.size() == 0){
+        if (numeros_random.size() == 0) {
             return 0;
         }
         U = (B - A) * numeros_random.get(0) + A;
@@ -187,44 +178,35 @@ public class FilaSimples {
     public void printaProbabilidadePorQntdClientes() {
         int index = 0;
         for (float tempo_por_quantidade : tempo_por_quantidade) {
-            System.out.println("Probabilidade de " + index + " clientes na fila: " + ((tempo_por_quantidade/tempo_global) * 100) + "%");
+            System.out.println("Probabilidade de " + index + " clientes na fila: "
+                    + ((tempo_por_quantidade / tempo_global) * 100) + "%");
             index++;
         }
     }
 
     public float[] fila(int numeroExecucao) {
-        if(numeroExecucao >= 1){
+        if (numeroExecucao >= 1) {
             zerarAlgoritmo();
         }
         Random geradorNumeros = new Random();
-        cl.gerarNumeros(Math.abs(geradorNumeros.nextInt(100000) + 100), Math.abs(geradorNumeros.nextInt(100000) + 100), Math.abs(geradorNumeros.nextInt(100000) + 100));
+        cl.gerarNumeros(Math.abs(geradorNumeros.nextInt(100000) + 100), Math.abs(geradorNumeros.nextInt(100000) + 100),
+                Math.abs(geradorNumeros.nextInt(100000) + 100));
         numeros_random = cl.getNumeros();
         this.tempo_por_quantidade = new float[this.K + 1];
-        System.out.println("Execucao numero: " + (numeroExecucao + 1));
+
+        System.out.println("----------------------------------------------------");
+        System.out.println("-----------------EXECUCAO NUMERO: " + (numeroExecucao + 1) + "-----------------");
+        System.out.println("----------------------------------------------------");
+
         while (!numeros_random.isEmpty()) {
             if (agenda_chegada.isEmpty()) {
                 agendaChegada(3);
                 chegada(getT());
             }
-            System.out.println("--------------------");
-            System.out.println("Tempo Global: " + tempo_global);
-            System.out.println("Ultima chegada: " + getTempoAnteriorChegada());
-            System.out.println("Ultima saída: " + getTempoAnteriorSaida());
-            chegadaFilaToString();
-            AgendaSaidaToString();
-            System.out.println("--------------------");
-            // System.out.println(getFila());
             if (verificaSaida() == true) {
                 saida(agenda_saida.get(0));
             } else {
                 chegada(getProximaChegada());
-                /*
-                 * else {
-                 * float aux = agenda_chegada.get(agenda_chegada.indexOf(getProximaChegada()) +
-                 * 1);
-                 * setProximaChegada(aux);
-                 * }
-                 */
             }
         }
         System.out.println(tempo_global + " tempo total");
@@ -232,6 +214,17 @@ public class FilaSimples {
         System.out.println("--------------------");
         printaProbabilidadePorQntdClientes();
         return tempo_por_quantidade;
+    }
+
+    // Printar uma execução da simulação por vez:
+    public void printAtualizacaoFila() {
+        System.out.println("--------------------");
+        System.out.println("Tempo Global: " + tempo_global);
+        System.out.println("Ultima chegada: " + getTempoAnteriorChegada());
+        System.out.println("Ultima saída: " + getTempoAnteriorSaida());
+        chegadaFilaToString();
+        AgendaSaidaToString();
+        System.out.println("--------------------");
     }
 
     public boolean agendaChegadaIsEmpty() {
@@ -246,8 +239,6 @@ public class FilaSimples {
             if (getProximaChegada() > agenda_saida.get(0)) {
                 return true;
             }
-        } else {
-            return false;
         }
         return false;
     }
