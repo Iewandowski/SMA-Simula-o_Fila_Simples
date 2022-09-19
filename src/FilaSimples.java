@@ -167,7 +167,7 @@ public class FilaSimples {
         }
     }
 
-    public void printaTempoTotalPorQuantidade() {
+    public void tempoTotalEProbabilidadePorQuantidadetoString() {
         int index = 0;
         System.out.println("****************************************************");
         System.out.println("Tempo Total: " + tempo_global);
@@ -179,21 +179,10 @@ public class FilaSimples {
             System.out.println(
                     index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
                             + "%");
-            // System.out.println("Tempo total com " + index + " clientes na fila: " +
-            // tempo_por_quantidade);
             index++;
         }
         System.out.println("====================================================");
         System.out.println();
-    }
-
-    public void printaProbabilidadePorQntdClientes() {
-        // int index = 0;
-        // for (float tempo_por_quantidade : tempo_por_quantidade) {
-        // System.out.println("Probabilidade de " + index + " clientes na fila: "
-        // + ((tempo_por_quantidade / tempo_global) * 100) + "%");
-        // index++;
-        // }
     }
 
     public float[] fila(int numeroExecucao) {
@@ -221,8 +210,7 @@ public class FilaSimples {
                 chegada(getProximaChegada());
             }
         }
-        printaTempoTotalPorQuantidade();
-        printaProbabilidadePorQntdClientes();
+        tempoTotalEProbabilidadePorQuantidadetoString();
         return tempo_por_quantidade;
     }
 

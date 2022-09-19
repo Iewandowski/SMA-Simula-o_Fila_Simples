@@ -18,7 +18,6 @@ public class App {
         FileReader arq = new FileReader("src\\fila.txt");
         BufferedReader lerArq = new BufferedReader(arq);
         String linha = lerArq.readLine();
-        System.out.println(linha);
 
         // Atribuindo informações de txt às variaveis
         String[] split = linha.split(",");
