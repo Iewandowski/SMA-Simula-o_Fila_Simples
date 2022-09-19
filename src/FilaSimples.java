@@ -140,7 +140,7 @@ public class FilaSimples {
 
     public float gerarRandom(String intervalo) {
         float U;
-        String[] split = intervalo.split(",");
+        String[] split = intervalo.split("[..]+");
         int A = Integer.parseInt(split[0]);
         int B = Integer.parseInt(split[1]);
         if (numeros_random.size() == 0) {
@@ -207,7 +207,7 @@ public class FilaSimples {
         this.tempo_por_quantidade = new float[this.K + 1];
 
         System.out.println("====================================================");
-        System.out.println("-----------------EXECUÇÃO NUMERO: " + (numeroExecucao + 1) + "-----------------");
+        System.out.println("================EXECUÇÃO NUMERO " + (numeroExecucao + 1) + "===================");
         System.out.println("====================================================");
 
         while (!numeros_random.isEmpty()) {

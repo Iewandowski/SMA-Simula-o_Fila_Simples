@@ -1,38 +1,41 @@
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.text.DecimalFormat;
 
 public class App {
 
     public static void main(String[] args) throws Exception {
         DecimalFormat format = new DecimalFormat("0.00");
-        Scanner scanner = new Scanner(System.in);
 
-        // ler intervalo de tempo para a chegada de clientes na fila:
-        System.out.print("Digite o intervalo de tempo para a chegada de cliente: (numero..numero) ");
-        String intervalo_chegada = scanner.next();
-
-        // ler intervalo de tempo de atendimento de um cliente na fila:
-        System.out.print("Digite o intervalo de tempo de atendimento para um cliente: (numero..numero) ");
-        String intervalo_atendimento = scanner.next();
-
-        // ler número de servidores:
-        System.out.print("Digite o número de servidores: ");
-        int servidores = scanner.nextInt();
-
+        // Iniciando variaveis
+        String intervalo_chegada, intervalo_atendimento;
+        int servidores, K;
         int repeticoes = 5;
-
-        // ler a capacidade da fila:
-        System.out.print("Digite a capacidade da fila: ");
-        int K = scanner.nextInt();
-        scanner.close();
         ArrayList<float[]> tempo_execucao = new ArrayList<>();
 
+        // Iniciando leitura de arquivo txt
+        FileReader arq = new FileReader("src\\fila.txt");
+        BufferedReader lerArq = new BufferedReader(arq);
+        String linha = lerArq.readLine();
+        System.out.println(linha);
+
+        // Atribuindo informações de txt às variaveis
+        String[] split = linha.split(",");
+        String[] split2 = split[0].split("/");
+
+        intervalo_chegada = split[1];
+        intervalo_atendimento = split[2];
+        servidores = Integer.parseInt(split2[2]);
+        K = Integer.parseInt(split2[3]);
+
+        // Iniciando fila com repetições
         FilaSimples filaSimples = new FilaSimples(intervalo_chegada, intervalo_atendimento, servidores, K);
         for (int i = 0; i < repeticoes; i++) {
             filaSimples.setT(3); // primeiro cliente chega no tempo 3.0
             tempo_execucao.add(filaSimples.fila(i));
         }
+
         calculaMediaExecucoes(tempo_execucao, repeticoes);
 
     }
@@ -47,36 +50,22 @@ public class App {
             }
         }
         tempo_total = tempo_total / repeticoes;
-        tempoExecucaoToString(tempo_por_execucao, repeticoes);
-        probabilidadeExecucaoToString(tempo_por_execucao, repeticoes, tempo_total);
+        totalExecucaoToString(tempo_por_execucao, repeticoes, tempo_total);
     }
 
-    public static void tempoExecucaoToString(float[] tempo_por_execucao, int repeticoes) {
-        // int index = 0;
-        // System.out.println("====================================================");
-        // System.out.println("==================RESULTADO GERAL===================");
-        // System.out.println("====================================================");
-        // for (float tempo : tempo_por_execucao) {
-        // System.out.println(index + "\t\t" + (tempo / repeticoes) + "\t\t" + )
-        // System.out.println(
-        // "Tempo total médio do cliente(s) " + index + " durante as execucoes: " +
-        // (tempo / repeticoes) + "\t\t" + (tempo / repeticoes) / tempo_total) * 100 + "
-        // % ");
-        // index++;
-        // }
-    }
-
-    public static void probabilidadeExecucaoToString(float[] tempo_por_execucao, int repeticoes, float tempo_total) {
+    public static void totalExecucaoToString(float[] tempo_por_execucao, int repeticoes, float tempo_total) {
         int index = 0;
         System.out.println("====================================================");
         System.out.println("==================RESULTADO GERAL===================");
         System.out.println("====================================================");
         System.out.println("Estado\t\tTempo\t\t\tProbabilidade");
+
         for (float tempo : tempo_por_execucao) {
             // calcular probabilidade geral e formatar número para impressão
             double prob = ((tempo / repeticoes) / tempo_total) * 100;
             String probFormat = String.format("%.4f", prob);
 
+            // imprimir resultado geral
             System.out.println(index + "\t\t" + (tempo / repeticoes) + "\t\t"
                     + probFormat + "% ");
             index++;
