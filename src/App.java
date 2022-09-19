@@ -52,20 +52,33 @@ public class App {
     }
 
     public static void tempoExecucaoToString(float[] tempo_por_execucao, int repeticoes) {
-        int index = 0;
-        for (float tempo : tempo_por_execucao) {
-            System.out.println(
-                    "Tempo total médio do cliente(s) " + index + " durante as execucoes: " + (tempo / repeticoes));
-            index++;
-        }
-        System.out.println(" --------------------------  ");
+        // int index = 0;
+        // System.out.println("====================================================");
+        // System.out.println("==================RESULTADO GERAL===================");
+        // System.out.println("====================================================");
+        // for (float tempo : tempo_por_execucao) {
+        // System.out.println(index + "\t\t" + (tempo / repeticoes) + "\t\t" + )
+        // System.out.println(
+        // "Tempo total médio do cliente(s) " + index + " durante as execucoes: " +
+        // (tempo / repeticoes) + "\t\t" + (tempo / repeticoes) / tempo_total) * 100 + "
+        // % ");
+        // index++;
+        // }
     }
 
     public static void probabilidadeExecucaoToString(float[] tempo_por_execucao, int repeticoes, float tempo_total) {
         int index = 0;
+        System.out.println("====================================================");
+        System.out.println("==================RESULTADO GERAL===================");
+        System.out.println("====================================================");
+        System.out.println("Estado\t\tTempo\t\t\tProbabilidade");
         for (float tempo : tempo_por_execucao) {
-            System.out.println("Probabilidade de ter " + index + " cliente(s) durante as execucoes: "
-                    + ((tempo / repeticoes) / tempo_total) * 100 + " % ");
+            // calcular probabilidade geral e formatar número para impressão
+            double prob = ((tempo / repeticoes) / tempo_total) * 100;
+            String probFormat = String.format("%.4f", prob);
+
+            System.out.println(index + "\t\t" + (tempo / repeticoes) + "\t\t"
+                    + probFormat + "% ");
             index++;
         }
     }

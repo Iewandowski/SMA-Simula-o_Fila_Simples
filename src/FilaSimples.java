@@ -169,19 +169,31 @@ public class FilaSimples {
 
     public void printaTempoTotalPorQuantidade() {
         int index = 0;
+        System.out.println("****************************************************");
+        System.out.println("Tempo Total: " + tempo_global);
+        System.out.println("****************************************************");
+        System.out.println("Estado\t\tTempo\t\t\tProbabilidade");
         for (float tempo_por_quantidade : tempo_por_quantidade) {
-            System.out.println("Tempo total com " + index + " clientes na fila: " + tempo_por_quantidade);
+            double prob = (tempo_por_quantidade / tempo_global) * 100;
+            String probFormat = String.format("%.4f", prob);
+            System.out.println(
+                    index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
+                            + "%");
+            // System.out.println("Tempo total com " + index + " clientes na fila: " +
+            // tempo_por_quantidade);
             index++;
         }
+        System.out.println("====================================================");
+        System.out.println();
     }
 
     public void printaProbabilidadePorQntdClientes() {
-        int index = 0;
-        for (float tempo_por_quantidade : tempo_por_quantidade) {
-            System.out.println("Probabilidade de " + index + " clientes na fila: "
-                    + ((tempo_por_quantidade / tempo_global) * 100) + "%");
-            index++;
-        }
+        // int index = 0;
+        // for (float tempo_por_quantidade : tempo_por_quantidade) {
+        // System.out.println("Probabilidade de " + index + " clientes na fila: "
+        // + ((tempo_por_quantidade / tempo_global) * 100) + "%");
+        // index++;
+        // }
     }
 
     public float[] fila(int numeroExecucao) {
@@ -194,9 +206,9 @@ public class FilaSimples {
         numeros_random = cl.getNumeros();
         this.tempo_por_quantidade = new float[this.K + 1];
 
-        System.out.println("----------------------------------------------------");
-        System.out.println("-----------------EXECUCAO NUMERO: " + (numeroExecucao + 1) + "-----------------");
-        System.out.println("----------------------------------------------------");
+        System.out.println("====================================================");
+        System.out.println("-----------------EXECUÇÃO NUMERO: " + (numeroExecucao + 1) + "-----------------");
+        System.out.println("====================================================");
 
         while (!numeros_random.isEmpty()) {
             if (agenda_chegada.isEmpty()) {
@@ -209,9 +221,7 @@ public class FilaSimples {
                 chegada(getProximaChegada());
             }
         }
-        System.out.println(tempo_global + " tempo total");
         printaTempoTotalPorQuantidade();
-        System.out.println("--------------------");
         printaProbabilidadePorQntdClientes();
         return tempo_por_quantidade;
     }
