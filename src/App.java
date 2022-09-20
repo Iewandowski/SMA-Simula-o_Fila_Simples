@@ -31,7 +31,7 @@ public class App {
         // Iniciando fila com repetições
         FilaSimples filaSimples = new FilaSimples(intervalo_chegada, intervalo_atendimento, servidores, K);
         for (int i = 0; i < repeticoes; i++) {
-            filaSimples.setT(3); // primeiro cliente chega no tempo 3.0
+            filaSimples.setT((float) 2.5); // primeiro cliente chega no tempo 2.5
             tempo_execucao.add(filaSimples.fila(i));
         }
 
@@ -69,5 +69,6 @@ public class App {
                     + probFormat + "% ");
             index++;
         }
+        System.out.println("====================================================");
     }
 }
