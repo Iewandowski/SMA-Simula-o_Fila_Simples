@@ -161,7 +161,7 @@ public class FilaTandem {
             fila--;
             chegada_fila.remove(0);
             agenda_passagem.remove(0);
-            if (fila >= servidores) {
+            if (fila_dois >= servidores_fila_dois) {
                 agenda_saida.add( T + gerarRandom(intervalo_atendimento));
             }
         }
@@ -177,8 +177,8 @@ public class FilaTandem {
         fila--;
         chegada_fila.remove(0);
         agenda_saida.remove(0);
-        if (fila >= servidores) {
-            agenda_saida.add(T + gerarRandom(intervalo_atendimento));
+        if (fila >= 1) {
+            agenda_saida.add(T + gerarRandom(intervalo_atendimento_fila_dois));
         }
     }
 
@@ -250,6 +250,9 @@ public class FilaTandem {
             }
             if (verificaSaida() == true) {
                 saida(agenda_saida.get(0));
+            }
+            if(verificaPassagemDeFila() == true){
+                passagemFilaUmDois(agenda_passagem.get(0));
             } else {
                 chegada(getProximaChegada());
             }
