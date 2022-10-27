@@ -3,32 +3,38 @@ import java.util.Random;
 
 public class FilaTandem {
     static public int fila = 0;
+    static public int fila_dois = 0;
     public int K, servidores, servidores_fila_dois, K_fila_dois;
     public float tempo_cliente, T;
     String intervalo_chegada, intervalo_atendimento, intervalo_atendimento_fila_dois, intervalo_chegada_fila_dois;
     ArrayList<Float> numeros_random;
     CongruenteLinear cl = new CongruenteLinear();
     static int contador = 0;
-    ArrayList<TipoOperacao> agenda_chegada = new ArrayList<>();
-    ArrayList<TipoOperacao> chegada_fila = new ArrayList<>();
-    ArrayList<TipoOperacao> agenda_saida = new ArrayList<>();
+    ArrayList<Float> agenda_chegada = new ArrayList<>();
+    ArrayList<Float> chegada_fila = new ArrayList<>();
+    ArrayList<Float> agenda_saida = new ArrayList<>();
+    ArrayList<Float> agenda_passagem = new ArrayList<>();
     private float[] tempo_por_quantidade;
+    private float[] tempo_por_quantidade_fila_dois;
     private float tempo_global = 0;
     private float tempo_anterior_chegada = 0;
     private float tempo_anterior_saida = 0;
-    private float proxima_chegada;
+    private float tempo_anterior_passagem = 0;
+    private TipoOperacao proxima_chegada;
+    private TipoOperacao proxima_passagem;
     private int qntd_clientes = 0;
     private int qntd_clientes_fila_dois = 0;
 
     public FilaTandem(String intervalo_chegada, String intervalo_atendimento, int servidores, int K,
-            String intervalo_chegada_fila_dois, String intervalo_atendimento_fila_dois, int servidores_fila_dois, int K_fila_dois) {
+            String intervalo_chegada_fila_dois, String intervalo_atendimento_fila_dois, int servidores_fila_dois,
+            int K_fila_dois) {
         this.intervalo_chegada = intervalo_chegada;
         this.intervalo_atendimento = intervalo_atendimento;
         this.K = K;
         this.servidores = servidores;
         this.intervalo_atendimento_fila_dois = intervalo_atendimento_fila_dois;
         this.intervalo_chegada_fila_dois = intervalo_chegada_fila_dois;
-        this.servidores_fila_dois =  servidores_fila_dois;
+        this.servidores_fila_dois = servidores_fila_dois;
         this.K_fila_dois = K_fila_dois;
     }
 
@@ -49,11 +55,23 @@ public class FilaTandem {
     }
 
     public float getProximaChegada() {
-        return proxima_chegada;
+        return proxima_chegada.tempoOperacao;
     }
 
-    public void setProximaChegada(float tempo) {
-        this.proxima_chegada = tempo;
+    public float getProximaPassagem() {
+        return proxima_passagem.tempoOperacao;
+    }
+
+    public void setProximaChegada(TipoOperacao proxChegada) {
+        this.proxima_chegada = proxChegada;
+    }
+
+    public void setTempoAnteriorPassagem(Float proxPassagem) {
+        this.tempo_anterior_passagem = proxPassagem;
+    }
+
+    public float getTempoAnteriorPassagem() {
+        return tempo_anterior_passagem;
     }
 
     public float getTempoAnteriorSaida() {
@@ -93,7 +111,7 @@ public class FilaTandem {
         this.tempo_global = 0;
         this.tempo_anterior_chegada = 0;
         this.tempo_anterior_saida = 0;
-        this.proxima_chegada = 0;
+        this.proxima_chegada = new TipoOperacao(0, "CH1");
         this.qntd_clientes = 0;
         this.fila = 0;
         this.agenda_chegada = new ArrayList<>();
@@ -106,7 +124,6 @@ public class FilaTandem {
             agenda_chegada.remove(0);
         }
         float proxima_chegada = T + gerarRandom(intervalo_chegada);
-        setProximaChegada(proxima_chegada);
         agenda_chegada.add(proxima_chegada);
     }
 
@@ -119,13 +136,34 @@ public class FilaTandem {
             qntd_clientes++;
             chegada_fila.add(T);
             setTempoAnteriorChegada(T);
-            if (fila <= servidores) {
-                float proxima_saida = T + gerarRandom(intervalo_atendimento);
-                agenda_saida.add(proxima_saida);
+            if (fila_dois < K) {
+                float proxima_passagem = T + gerarRandom(intervalo_atendimento);
+                agenda_passagem.add(proxima_passagem);
             }
             agendarProximaChegada();
         } else {
             agendarProximaChegada();
+        }
+    }
+
+    public void passagemFilaUmDois(float T) {
+        float aux_tempo;
+        setT(T);
+        if (fila_dois < K_fila_dois) {
+            aux_tempo = T;
+            tempo_por_quantidade[qntd_clientes] += (T
+                    - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
+            tempo_por_quantidade_fila_dois[qntd_clientes_fila_dois] += (T
+                    - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
+            qntd_clientes--;
+            qntd_clientes_fila_dois++;
+            setTempoAnteriorPassagem(aux_tempo);
+            fila--;
+            chegada_fila.remove(0);
+            agenda_passagem.remove(0);
+            if (fila >= servidores) {
+                agenda_saida.add( T + gerarRandom(intervalo_atendimento));
+            }
         }
     }
 
@@ -241,6 +279,15 @@ public class FilaTandem {
     public boolean verificaSaida() {
         if (agendaChegadaIsEmpty() == false && agenda_saida.size() > 0) {
             if (getProximaChegada() > agenda_saida.get(0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean verificaPassagemDeFila() {
+        if (agendaChegadaIsEmpty() == false && agenda_passagem.size() > 0) {
+            if (getProximaPassagem() > agenda_saida.get(0) && getProximaChegada() > getProximaChegada()) {
                 return true;
             }
         }
