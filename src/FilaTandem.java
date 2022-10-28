@@ -133,10 +133,12 @@ public class FilaTandem {
         if (fila < K) {
             fila++;
             tempo_por_quantidade[qntd_clientes] += (T - Math.max(tempoAnteriorChegada, getTempoAnteriorSaida()));
+            tempo_por_quantidade_fila_dois[qntd_clientes_fila_dois] += (T
+            - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
             qntd_clientes++;
             chegada_fila.add(T);
             setTempoAnteriorChegada(T);
-            if (fila_dois < K) {
+            if (fila <= servidores) {
                 float proxima_passagem = T + gerarRandom(intervalo_atendimento);
                 agenda_passagem.add(proxima_passagem);
             }
@@ -160,8 +162,8 @@ public class FilaTandem {
             setTempoAnteriorPassagem(aux_tempo);
             fila--;
             chegada_fila.remove(0);
-            agenda_passagem.remove(0);
-            if (fila_dois >= servidores_fila_dois) {
+            agenda_passagem.add(T);
+            if (fila_dois <= servidores_fila_dois) {
                 agenda_saida.add( T + gerarRandom(intervalo_atendimento));
             }
         }
@@ -171,13 +173,16 @@ public class FilaTandem {
         float aux_tempo;
         setT(T);
         aux_tempo = T;
-        tempo_por_quantidade[qntd_clientes] += (T - Math.max(getTempoAnteriorChegada(), getTempoAnteriorSaida()));
-        qntd_clientes--;
+        tempo_por_quantidade[qntd_clientes] += (T
+        - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
+        tempo_por_quantidade_fila_dois[qntd_clientes_fila_dois] += (T
+        - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
+        qntd_clientes_fila_dois--;
         setTempoAnteriorSaida(aux_tempo);
-        fila--;
-        chegada_fila.remove(0);
+        fila_dois--;
+        agenda_passagem.remove(0);
         agenda_saida.remove(0);
-        if (fila >= 1) {
+        if (fila_dois <= servidores_fila_dois) {
             agenda_saida.add(T + gerarRandom(intervalo_atendimento_fila_dois));
         }
     }
