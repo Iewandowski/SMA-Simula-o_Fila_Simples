@@ -15,7 +15,7 @@ public class App {
         ArrayList<float[]> tempo_execucao = new ArrayList<>();
 
         // Iniciando leitura de arquivo txt
-        FileReader arq = new FileReader("src\\fila.txt");
+        FileReader arq = new FileReader("fila.txt");
         BufferedReader lerArq = new BufferedReader(arq);
         String linha = lerArq.readLine();
 
@@ -28,11 +28,25 @@ public class App {
         servidores = Integer.parseInt(split2[2]);
         K = Integer.parseInt(split2[3]);
 
+        String linha_dois = lerArq.readLine();
+
+        // Atribuindo informações de txt às variaveis
+        String[] split_dois = linha_dois.split(",");
+        String[] split2_dois = split_dois[0].split("/");
+
+        String intervalo_atendimento_fila_dois  = split_dois[1];
+        int servidores_fila_dois  = Integer.parseInt(split2_dois[2]);
+        int K_fila_dois  = Integer.parseInt(split2_dois[3]);
+        
+        System.out.println("intervalo: " + intervalo_atendimento_fila_dois + "servidores: " + servidores_fila_dois + "capacidade " + K_fila_dois);
+        lerArq.close();
+
         // Iniciando fila com repetições
-        FilaSimples filaSimples = new FilaSimples(intervalo_chegada, intervalo_atendimento, servidores, K);
-        for (int i = 0; i < repeticoes; i++) {
-            filaSimples.setT((float) 2.5); // primeiro cliente chega no tempo 2.5
-            tempo_execucao.add(filaSimples.fila(i));
+        // FilaSimples filaSimples = new FilaSimples(intervalo_chegada, intervalo_atendimento, servidores, K);
+        FilaTandem filaTandem = new FilaTandem(intervalo_chegada, intervalo_atendimento, servidores, K, intervalo_atendimento_fila_dois, servidores_fila_dois, K_fila_dois);
+        for (int i = 0; i < 1; i++) {
+            filaTandem.setT((float) 2.5); // primeiro cliente chega no tempo 2.5
+            tempo_execucao.add(filaTandem.fila(i));
         }
 
         calculaMediaExecucoes(tempo_execucao, repeticoes);
