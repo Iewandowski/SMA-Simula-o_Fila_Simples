@@ -155,8 +155,7 @@ public class FilaTandem {
             fila++;
             tempo_por_quantidade[qntd_clientes] += (T - Math.max(tempoAnteriorChegada, getTempoAnteriorSaida()));
             tempo_por_quantidade_fila_dois[qntd_clientes_fila_dois] += (T
-                    - Math.max(getTempoAnteriorChegada(),
-                            Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
+            - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
             qntd_clientes++;
             chegada_fila.add(T);
             setTempoAnteriorChegada(T);
