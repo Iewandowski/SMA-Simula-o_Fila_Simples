@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class FilaTandem {
-    static public int fila = 0;
-    static public int fila_dois = 0;
+    public int fila = 0;
+    public int fila_dois = 0;
     public int K, servidores, servidores_fila_dois, K_fila_dois;
     public float tempo_cliente, T;
     String intervalo_chegada, intervalo_atendimento, intervalo_atendimento_fila_dois, intervalo_chegada_fila_dois;
@@ -120,12 +120,18 @@ public class FilaTandem {
         this.tempo_global = 0;
         this.tempo_anterior_chegada = 0;
         this.tempo_anterior_saida = 0;
+        this.tempo_anterior_passagem = 0;
         this.proxima_chegada = 0;
         this.qntd_clientes = 0;
         this.proxima_saida = 0;
         this.proxima_passagem = 0;
+        this.qntd_clientes_fila_dois = 0;
+        this.qntd_clientes = 0;
         this.fila = 0;
+        this.fila_dois = 0;
         this.agenda_chegada = new ArrayList<>();
+        this.agenda_passagem = new ArrayList<>();
+        this.chegada_passagem = new ArrayList<>();
         this.chegada_fila = new ArrayList<>();
         this.agenda_saida = new ArrayList<>();
     }
@@ -150,12 +156,13 @@ public class FilaTandem {
 
     public void chegada(float T) {
         setT(T);
-        float tempoAnteriorChegada = getTempoAnteriorChegada();
         if (fila < K) {
             fila++;
-            tempo_por_quantidade[qntd_clientes] += (T - Math.max(tempoAnteriorChegada, getTempoAnteriorSaida()));
+            tempo_por_quantidade[qntd_clientes] += (T - Math.max(getTempoAnteriorChegada(),
+                    Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
             tempo_por_quantidade_fila_dois[qntd_clientes_fila_dois] += (T
-            - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
+                    - Math.max(getTempoAnteriorChegada(),
+                            Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
             qntd_clientes++;
             chegada_fila.add(T);
             setTempoAnteriorChegada(T);
@@ -179,14 +186,16 @@ public class FilaTandem {
         float aux_tempo;
         setT(T);
         fila--;
-        tempo_por_quantidade[qntd_clientes] += (T
-                - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
-        tempo_por_quantidade_fila_dois[qntd_clientes_fila_dois] += (T
-                - Math.max(getTempoAnteriorChegada(), Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
         qntd_clientes--;
         agenda_passagem.remove(0);
         chegada_fila.remove(0);
         if (fila_dois < K_fila_dois) {
+            tempo_por_quantidade[qntd_clientes + 1] += (T
+                    - Math.max(getTempoAnteriorChegada(),
+                            Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
+            tempo_por_quantidade_fila_dois[qntd_clientes_fila_dois] += (T
+                    - Math.max(getTempoAnteriorChegada(),
+                            Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
             fila_dois++;
             aux_tempo = T;
             qntd_clientes_fila_dois++;
@@ -257,8 +266,26 @@ public class FilaTandem {
         }
     }
 
+    public void printaQuantidadeTempoPorFila() {
+        System.out.println("FILA 1: ");
+        int index = 0;
+        for (float tempo_fila_um : tempo_por_quantidade) {
+            System.out.println("Tempo fila 1: " + " estado " + index + " - " + tempo_fila_um);
+            index++;
+        }
+        System.out.println("*****************************************************");
+        index = 0;
+        for (float tempo_fila_um : tempo_por_quantidade_fila_dois) {
+            System.out.println("Tempo fila 2: " + " estado " + index + " - " + tempo_fila_um);
+            index++;
+        }
+    }
+
     public void tempoTotalEProbabilidadePorQuantidadetoString() {
         int index = 0;
+        System.out.println("****************************************************");
+        System.out.println("\t\t\tFila 1");
+        System.out.println("****************************************************");
         System.out.println("****************************************************");
         System.out.println("Tempo Total: " + tempo_global);
         System.out.println("****************************************************");
@@ -271,11 +298,27 @@ public class FilaTandem {
                             + "%");
             index++;
         }
+        index = 0;
+        System.out.println("****************************************************");
+        System.out.println("\t\t\tFila 2");
+        System.out.println("****************************************************");
+        System.out.println("****************************************************");
+        System.out.println("Tempo Total: " + tempo_global);
+        System.out.println("****************************************************");
+        System.out.println("Estado\t\tTempo\t\t\tProbabilidade");
+        for (float tempo_por_quantidade : tempo_por_quantidade_fila_dois) {
+            double prob = (tempo_por_quantidade / tempo_global) * 100;
+            String probFormat = String.format("%.4f", prob);
+            System.out.println(
+                    index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
+                            + "%");
+            index++;
+        }
         System.out.println("====================================================");
         System.out.println();
     }
 
-    public float[] fila(int numeroExecucao) {
+    public float[][] fila(int numeroExecucao) {
         if (numeroExecucao >= 1) {
             zerarAlgoritmo();
         }
@@ -291,7 +334,8 @@ public class FilaTandem {
         System.out.println("====================================================");
 
         while (!numeros_random.isEmpty()) {
-            printAtualizacaoFila();
+            //printAtualizacaoFila();
+            //printaQuantidadeTempoPorFila();
             if (agenda_chegada.isEmpty()) {
                 agendaChegada((float) 2.5);
                 chegada(getT());
@@ -305,8 +349,9 @@ public class FilaTandem {
                 chegada(getProximaChegada());
             }
         }
+        setTempoGlobal(T);
         tempoTotalEProbabilidadePorQuantidadetoString();
-        return tempo_por_quantidade;
+        return new float[][] { tempo_por_quantidade, tempo_por_quantidade_fila_dois };
     }
 
     // Printar uma execução da simulação por vez:
