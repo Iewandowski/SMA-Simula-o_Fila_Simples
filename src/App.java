@@ -15,7 +15,8 @@ public class App {
         ArrayList<float[][]> tempo_execucao = new ArrayList<>();
 
         // Iniciando leitura de arquivo txt
-        FileReader arq = new FileReader("fila.txt");
+        FileReader arq = new FileReader(
+                "src\\fila.txt");
         BufferedReader lerArq = new BufferedReader(arq);
         String linha = lerArq.readLine();
 
@@ -38,8 +39,8 @@ public class App {
         int servidores_fila_dois = Integer.parseInt(split2_dois[2]);
         int K_fila_dois = Integer.parseInt(split2_dois[3]);
 
-        System.out.println("intervalo: " + intervalo_atendimento_fila_dois + "servidores: " + servidores_fila_dois
-                + "capacidade " + K_fila_dois);
+        System.out.println("intervalo: " + intervalo_atendimento_fila_dois + " servidores: " + servidores_fila_dois
+                + " capacidade " + K_fila_dois);
         lerArq.close();
 
         // Iniciando fila com repetições
@@ -51,20 +52,18 @@ public class App {
             filaTandem.setT((float) 2.5); // primeiro cliente chega no tempo 2.5
             tempo_execucao.add(filaTandem.fila(i));
         }
-
         calculaMediaExecucoes(tempo_execucao, repeticoes, K, K_fila_dois);
-
     }
 
-    public static void calculaMediaExecucoes(ArrayList<float[][]> tempo_execucao, int repeticoes, int tamanho_fila_um, int tamanho_fila_dois) {
+    public static void calculaMediaExecucoes(ArrayList<float[][]> tempo_execucao, int repeticoes, int tamanho_fila_um,
+            int tamanho_fila_dois) {
         float[] tempo_por_execucao = new float[tempo_execucao.get(0)[0].length];
         float tempo_total = 0;
         int tamanho_fila = 0;
         for (int k = 0; k < 2; k++) {
-            if(k == 0){
-                tamanho_fila = tamanho_fila_um; 
-            }
-            else{
+            if (k == 0) {
+                tamanho_fila = tamanho_fila_um;
+            } else {
                 tempo_por_execucao = new float[tempo_execucao.get(0)[0].length];
                 tamanho_fila = tamanho_fila_dois;
             }
@@ -72,7 +71,7 @@ public class App {
                 for (int j = 0; j <= tamanho_fila; j++) {
                     tempo_por_execucao[j] += tempo_execucao.get(i)[k][j];
                     tempo_total += tempo_execucao.get(i)[k][j];
-                   
+
                 }
             }
             tempo_total = tempo_total / repeticoes;
@@ -86,7 +85,7 @@ public class App {
         int index = 0;
         System.out.println("====================================================");
         System.out.println("==================RESULTADO GERAL===================");
-        System.out.println("==================      FILA" + (index_fila + 1) + "    ===================");
+        System.out.println("==================      FILA " + (index_fila + 1) + "    ===================");
         System.out.println("====================================================");
         System.out.println("Tempo total: " + tempo_total);
         System.out.println("Estado\t\tTempo\t\t\tProbabilidade");

@@ -7,7 +7,6 @@ public class FilaTandem {
     public int K, servidores, servidores_fila_dois, K_fila_dois;
     public float tempo_cliente, T;
     String intervalo_chegada, intervalo_atendimento, intervalo_atendimento_fila_dois, intervalo_chegada_fila_dois;
-    ArrayList<Float> numeros_random;
     CongruenteLinear cl = new CongruenteLinear();
     static int contador = 0;
     ArrayList<Float> agenda_chegada = new ArrayList<>();
@@ -26,6 +25,9 @@ public class FilaTandem {
     private float proxima_passagem;
     private int qntd_clientes = 0;
     private int qntd_clientes_fila_dois = 0;
+    Random geradorNumeros;
+    private int a, c, M;
+    private float Xi = 3;
 
     public FilaTandem(String intervalo_chegada, String intervalo_atendimento, int servidores, int K,
             String intervalo_atendimento_fila_dois, int servidores_fila_dois,
@@ -37,6 +39,10 @@ public class FilaTandem {
         this.intervalo_atendimento_fila_dois = intervalo_atendimento_fila_dois;
         this.servidores_fila_dois = servidores_fila_dois;
         this.K_fila_dois = K_fila_dois;
+        this.geradorNumeros = new Random();
+        this.a = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.c = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.M = Math.abs(geradorNumeros.nextInt(100000) + 100);
     }
 
     public float getTempoGlobal() {
@@ -116,6 +122,14 @@ public class FilaTandem {
         this.fila = numero;
     }
 
+    public float getLastXi() {
+        return this.Xi;
+    }
+
+    public void setLastXi(float Xi) {
+        this.Xi = Xi;
+    }
+
     public void zerarAlgoritmo() {
         this.tempo_global = 0;
         this.tempo_anterior_chegada = 0;
@@ -134,6 +148,10 @@ public class FilaTandem {
         this.chegada_passagem = new ArrayList<>();
         this.chegada_fila = new ArrayList<>();
         this.agenda_saida = new ArrayList<>();
+        this.geradorNumeros = new Random();
+        this.a = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.c = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.M = Math.abs(geradorNumeros.nextInt(100000) + 100);
     }
 
     public void agendarProximaChegada() {
@@ -226,15 +244,16 @@ public class FilaTandem {
     }
 
     public float gerarRandom(String intervalo) {
-        float U;
+        float U, Ui;
         String[] split = intervalo.split("[..]+");
         int A = Integer.parseInt(split[0]);
         int B = Integer.parseInt(split[1]);
-        if (numeros_random.size() == 0) {
-            return 0;
-        }
-        U = (B - A) * numeros_random.get(0) + A;
-        numeros_random.remove(0);
+
+        Xi = (a * getLastXi() + c) % M;
+        setLastXi(Xi);
+        Ui = Xi / M;
+
+        U = (B - A) * Ui + A;
         return U;
     }
 
@@ -322,10 +341,13 @@ public class FilaTandem {
         if (numeroExecucao >= 1) {
             zerarAlgoritmo();
         }
-        Random geradorNumeros = new Random();
-        cl.gerarNumeros(Math.abs(geradorNumeros.nextInt(100000) + 100), Math.abs(geradorNumeros.nextInt(100000) + 100),
-                Math.abs(geradorNumeros.nextInt(100000) + 100));
-        numeros_random = cl.getNumeros();
+        /*
+         * Random geradorNumeros = new Random();
+         * cl.gerarNumeros(Math.abs(geradorNumeros.nextInt(100000) + 100),
+         * Math.abs(geradorNumeros.nextInt(100000) + 100),
+         * Math.abs(geradorNumeros.nextInt(100000) + 100));
+         * numeros_random = cl.getNumeros();
+         */
         this.tempo_por_quantidade = new float[this.K + 1];
         this.tempo_por_quantidade_fila_dois = new float[this.K_fila_dois + 1];
 
@@ -333,9 +355,9 @@ public class FilaTandem {
         System.out.println("================EXECUÇÃO NUMERO " + (numeroExecucao + 1) + "===================");
         System.out.println("====================================================");
 
-        while (!numeros_random.isEmpty()) {
-            //printAtualizacaoFila();
-            //printaQuantidadeTempoPorFila();
+        for (int i = 0; i < 10000; i++) {
+            // printAtualizacaoFila();
+            // printaQuantidadeTempoPorFila();
             if (agenda_chegada.isEmpty()) {
                 agendaChegada((float) 2.5);
                 chegada(getT());
