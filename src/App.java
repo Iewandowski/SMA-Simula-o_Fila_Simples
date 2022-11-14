@@ -27,6 +27,7 @@ public class App {
         }
 
         if (numero_linhas.size() == 1) {
+            ArrayList<float[]> tempo_execucao_simples = new ArrayList<>();
             String[] split = numero_linhas.get(0).split(",");
             String[] split2 = split[0].split("/");
 
@@ -37,6 +38,13 @@ public class App {
 
             System.out.print("RESULTADO - FILA SIMPLES: ");
             FilaSimples filaSimples = new FilaSimples(intervalo_chegada, intervalo_atendimento, servidores, K);
+
+            for (int i = 0; i < repeticoes; i++) {
+                filaSimples.setT((float) 2.5); // primeiro cliente chega no tempo 2.5
+                tempo_execucao_simples.add(filaSimples.fila(i));
+            }
+
+            calculaMediaExecucoesSimples(tempo_execucao_simples, repeticoes);
 
         } else if (numero_linhas.size() == 2) {
             String[] split = numero_linhas.get(0).split(",");
@@ -67,7 +75,7 @@ public class App {
                 filaTandem.setT((float) 2.5); // primeiro cliente chega no tempo 2.5
                 tempo_execucao.add(filaTandem.fila(i));
             }
-            calculaMediaExecucoes(tempo_execucao, repeticoes, K, K_fila_dois);
+            calculaMediaExecucoesTandem(tempo_execucao, repeticoes, K, K_fila_dois);
 
         } else if (numero_linhas.size() == 3) {
             System.out.print("RESULTADO - FILA DE ESPERA: ");
@@ -76,7 +84,8 @@ public class App {
         lerArq.close();
     }
 
-    public static void calculaMediaExecucoes(ArrayList<float[][]> tempo_execucao, int repeticoes, int tamanho_fila_um,
+    public static void calculaMediaExecucoesTandem(ArrayList<float[][]> tempo_execucao, int repeticoes,
+            int tamanho_fila_um,
             int tamanho_fila_dois) {
         float[] tempo_por_execucao = new float[tempo_execucao.get(0)[0].length];
         float tempo_total = 0;
@@ -96,12 +105,12 @@ public class App {
                 }
             }
             tempo_total = tempo_total / repeticoes;
-            totalExecucaoToString(tempo_por_execucao, repeticoes, tempo_total, k);
+            totalExecucaoTandemToString(tempo_por_execucao, repeticoes, tempo_total, k);
             tempo_total = 0;
         }
     }
 
-    public static void totalExecucaoToString(float[] tempo_por_execucao, int repeticoes, float tempo_total,
+    public static void totalExecucaoTandemToString(float[] tempo_por_execucao, int repeticoes, float tempo_total,
             int index_fila) {
         int index = 0;
         System.out.println("====================================================");
@@ -110,6 +119,39 @@ public class App {
         System.out.println("====================================================");
         System.out.println("Tempo total: " + tempo_total);
         System.out.println("Estado\t\tTempo\t\t\tProbabilidade");
+        for (float tempo : tempo_por_execucao) {
+            // calcular probabilidade geral e formatar número para impressão
+            double prob = ((tempo / repeticoes) / tempo_total) * 100;
+            String probFormat = String.format("%.4f", prob);
+
+            // imprimir resultado geral
+            System.out.println(index + "\t\t" + (tempo / repeticoes) + "\t\t"
+                    + probFormat + "% ");
+            index++;
+        }
+        System.out.println("====================================================");
+    }
+
+    public static void calculaMediaExecucoesSimples(ArrayList<float[]> tempo_execucao, int repeticoes) {
+        float tempo_total = 0;
+        float[] tempo_por_execucao = new float[tempo_execucao.get(0).length];
+        for (int i = 0; i < tempo_execucao.get(0).length; i++) {
+            for (int j = 0; j < repeticoes; j++) {
+                tempo_por_execucao[i] += tempo_execucao.get(j)[i];
+                tempo_total += tempo_execucao.get(j)[i];
+            }
+        }
+        tempo_total = tempo_total / repeticoes;
+        totalExecucaoSimplesToString(tempo_por_execucao, repeticoes, tempo_total);
+    }
+
+    public static void totalExecucaoSimplesToString(float[] tempo_por_execucao, int repeticoes, float tempo_total) {
+        int index = 0;
+        System.out.println("====================================================");
+        System.out.println("==================RESULTADO GERAL===================");
+        System.out.println("====================================================");
+        System.out.println("Estado\t\tTempo\t\t\tProbabilidade");
+
         for (float tempo : tempo_por_execucao) {
             // calcular probabilidade geral e formatar número para impressão
             double prob = ((tempo / repeticoes) / tempo_total) * 100;
