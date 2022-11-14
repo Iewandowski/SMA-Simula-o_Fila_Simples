@@ -18,12 +18,19 @@ public class FilaSimples {
     private float tempo_anterior_saida = 0;
     private float proxima_chegada;
     private int qntd_clientes = 0;
+    Random geradorNumeros;
+    private int a, c, M;
+    private float Xi = 3;
 
     public FilaSimples(String intervalo_chegada, String intervalo_atendimento, int servidores, int K) {
         this.intervalo_chegada = intervalo_chegada;
         this.intervalo_atendimento = intervalo_atendimento;
         this.K = K;
         this.servidores = servidores;
+        this.geradorNumeros = new Random();
+        this.a = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.c = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.M = Math.abs(geradorNumeros.nextInt(100000) + 100);
     }
 
     public float getTempoGlobal() {
@@ -83,6 +90,14 @@ public class FilaSimples {
         this.fila = numero;
     }
 
+    public float getLastXi() {
+        return this.Xi;
+    }
+
+    public void setLastXi(float Xi) {
+        this.Xi = Xi;
+    }
+
     public void zerarAlgoritmo() {
         this.tempo_global = 0;
         this.tempo_anterior_chegada = 0;
@@ -93,6 +108,9 @@ public class FilaSimples {
         this.agenda_chegada = new ArrayList<>();
         this.chegada_fila = new ArrayList<>();
         this.agenda_saida = new ArrayList<>();
+        this.a = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.c = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        this.M = Math.abs(geradorNumeros.nextInt(100000) + 100);
     }
 
     public void agendarProximaChegada() {
@@ -139,15 +157,16 @@ public class FilaSimples {
     }
 
     public float gerarRandom(String intervalo) {
-        float U;
+        float U, Ui;
         String[] split = intervalo.split("[..]+");
         int A = Integer.parseInt(split[0]);
         int B = Integer.parseInt(split[1]);
-        if (numeros_random.size() == 0) {
-            return 0;
-        }
-        U = (B - A) * numeros_random.get(0) + A;
-        numeros_random.remove(0);
+
+        Xi = (a * getLastXi() + c) % M;
+        setLastXi(Xi);
+        Ui = Xi / M;
+
+        U = (B - A) * Ui + A;
         return U;
     }
 
@@ -189,17 +208,13 @@ public class FilaSimples {
         if (numeroExecucao >= 1) {
             zerarAlgoritmo();
         }
-        Random geradorNumeros = new Random();
-        cl.gerarNumeros(Math.abs(geradorNumeros.nextInt(100000) + 100), Math.abs(geradorNumeros.nextInt(100000) + 100),
-                Math.abs(geradorNumeros.nextInt(100000) + 100));
-        numeros_random = cl.getNumeros();
         this.tempo_por_quantidade = new float[this.K + 1];
 
         System.out.println("====================================================");
         System.out.println("================EXECUÇÃO NUMERO " + (numeroExecucao + 1) + "===================");
         System.out.println("====================================================");
 
-        while (!numeros_random.isEmpty()) {
+        for (int i = 0; i < 10000; i++) {
             if (agenda_chegada.isEmpty()) {
                 agendaChegada(3);
                 chegada(getT());

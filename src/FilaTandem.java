@@ -341,13 +341,6 @@ public class FilaTandem {
         if (numeroExecucao >= 1) {
             zerarAlgoritmo();
         }
-        /*
-         * Random geradorNumeros = new Random();
-         * cl.gerarNumeros(Math.abs(geradorNumeros.nextInt(100000) + 100),
-         * Math.abs(geradorNumeros.nextInt(100000) + 100),
-         * Math.abs(geradorNumeros.nextInt(100000) + 100));
-         * numeros_random = cl.getNumeros();
-         */
         this.tempo_por_quantidade = new float[this.K + 1];
         this.tempo_por_quantidade_fila_dois = new float[this.K_fila_dois + 1];
 
@@ -356,8 +349,6 @@ public class FilaTandem {
         System.out.println("====================================================");
 
         for (int i = 0; i < 10000; i++) {
-            // printAtualizacaoFila();
-            // printaQuantidadeTempoPorFila();
             if (agenda_chegada.isEmpty()) {
                 agendaChegada((float) 2.5);
                 chegada(getT());
@@ -408,11 +399,8 @@ public class FilaTandem {
 
     public boolean verificaPassagemDeFila() {
         if (agendaChegadaIsEmpty() == false && agenda_passagem.size() > 0) {
-            // System.out.println("AQUI ENTREI TESTE: " + getProximaPassagem()+ " -- " +
-            // getProximaSaida());
             if ((getProximaPassagem() < getProximaSaida() || agenda_saida.size() == 0)
                     && getProximaChegada() > getProximaPassagem()) {
-                // System.out.println("ENTREI AQUII ksakasksa");
                 return true;
             }
         }
