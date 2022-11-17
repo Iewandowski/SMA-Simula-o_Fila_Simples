@@ -141,6 +141,7 @@ public class FilaProbabilidade {
         float proxima_chegada = T + gerarRandom(intervalo_chegada);
         setProximaChegada(proxima_chegada);
         agenda_chegada.add(proxima_chegada);
+        agenda_movimentacao.add(new TipoOperacao(proxima_chegada, "CH1"));
     }
 
     public void chegada(float T) {
@@ -150,6 +151,7 @@ public class FilaProbabilidade {
             filas[0].incrementaCliente();
             filas[0].chegadas.add(T);
             setTempoAnteriorChegada(T);
+            agenda_chegada.remove(0);
             if (filas[0].clientesAtuais <= filas[0].servidores) {
                 float proxima_passagem = T + gerarRandom(filas[0].intervalo_atendimento);
                 setProximaPassagem(proxima_passagem);
@@ -157,7 +159,8 @@ public class FilaProbabilidade {
             }
             agendarProximaChegada();
         } else if (agenda_movimentacao.size() < filas[0].servidores) {
-            float proxima_passagem = T + gerarRandom(intervalo_atendimento);
+            float proxima_passagem = T + gerarRandom(filas[0].intervalo_atendimento);
+            agenda_chegada.remove(0);
             setProximaPassagem(proxima_passagem);
             agenda_movimentacao.add(new TipoOperacao(proxima_passagem, calculaProximaOperacao(filas[0])));
             agendarProximaChegada();
@@ -168,6 +171,7 @@ public class FilaProbabilidade {
 
     public String calculaProximaOperacao(ObjetoFila fila) {
         float numeroGerado = geradorNumeros.nextFloat();
+        System.out.println("Entrei aqui" + numeroGerado);
         for (int i = 0; i < fila.possiveisCaminhos.length; i++) {
             if (numeroGerado < fila.possiveisCaminhos[i].probabilidade) {
                 return fila.nomeFila.concat(fila.possiveisCaminhos[i].caminho);

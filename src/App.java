@@ -89,6 +89,10 @@ public class App {
             System.out.println(fila1.possiveisCaminhos[0].probabilidade + "Testando");
 
             FilaProbabilidade filaProbabilidade = new FilaProbabilidade(fila1, fila2, fila3);
+
+                filaProbabilidade.setT((float) 1.0); // primeiro cliente chega no tempo 2.5
+                filaProbabilidade.fila(0);
+
             //calculaMediaExecucoesTandem(fila1,fila2,fila3);
 
         }
