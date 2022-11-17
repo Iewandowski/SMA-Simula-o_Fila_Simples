@@ -18,7 +18,7 @@ public class App {
 
         // Iniciando leitura de arquivo txt
         FileReader arq = new FileReader(
-                "src\\fila2.txt");
+                "fila3.txt");
         BufferedReader lerArq = new BufferedReader(arq);
         String line;
 
@@ -78,7 +78,19 @@ public class App {
             calculaMediaExecucoesTandem(tempo_execucao, repeticoes, K, K_fila_dois);
 
         } else if (numero_linhas.size() == 3) {
-            System.out.print("RESULTADO - FILA DE ESPERA: ");
+            System.out.print("Fila de Probabilidade ");
+            String[] split = numero_linhas.get(0).split(",");
+            String[] split2 = split[0].split("/");
+
+            ObjetoFila fila1 = retornaDadosFila(numero_linhas.get(0), true, "F1");
+            ObjetoFila fila2 = retornaDadosFila(numero_linhas.get(0), true, "F2");
+            ObjetoFila fila3 = retornaDadosFila(numero_linhas.get(0), true, "F3");
+
+            System.out.println(fila1.possiveisCaminhos[0].probabilidade + "Testando");
+
+            FilaProbabilidade filaProbabilidade = new FilaProbabilidade(fila1, fila2, fila3);
+            //calculaMediaExecucoesTandem(fila1,fila2,fila3);
+
         }
 
         lerArq.close();
@@ -143,6 +155,42 @@ public class App {
         }
         tempo_total = tempo_total / repeticoes;
         totalExecucaoSimplesToString(tempo_por_execucao, repeticoes, tempo_total);
+    }
+
+    public static ObjetoFila retornaDadosFila(String linha, boolean contemChegada, String nomeFila) {
+        int index = 0;
+        // Atribuindo informações de txt às variaveis
+        String[] split = linha.split(",");
+        String[] split_dois = split[0].split("/");
+
+        if (!contemChegada) {
+            String intervalo_atendimento = split[1];
+            int servidores = Integer.parseInt(split_dois[2]);
+            int K = Integer.parseInt(split_dois[3]);
+
+            PossivelCaminho[] destinos = new PossivelCaminho[(split.length - 2) / 2];
+
+            for (int i = 2; i < split.length; i = i + 2) {
+                destinos[index] = new PossivelCaminho(split[i], Double.parseDouble(split[i + 1]));
+                index++;
+            }
+            return new ObjetoFila(" ", intervalo_atendimento, servidores, K, destinos, nomeFila);
+        } else {
+            String chegada_intervalo = split[1];
+            String intervalo_atendimento = split[2];
+            int servidores = Integer.parseInt(split_dois[2]);
+            int K = Integer.parseInt(split_dois[3]);
+            if(K == 0){
+                K = Integer.MAX_VALUE;
+            }
+
+            PossivelCaminho[] destinos = new PossivelCaminho[(split.length - 3) / 2];
+            for (int i = 3; i < split.length; i = i + 2) {
+                destinos[index] = new PossivelCaminho(split[i], Double.parseDouble(split[i + 1]));
+                index++;
+            }
+            return new ObjetoFila(chegada_intervalo, intervalo_atendimento, servidores, K, destinos, nomeFila);
+        }
     }
 
     public static void totalExecucaoSimplesToString(float[] tempo_por_execucao, int repeticoes, float tempo_total) {
