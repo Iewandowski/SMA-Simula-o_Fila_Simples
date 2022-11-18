@@ -12,6 +12,7 @@ public class ObjetoFila {
     public String nomeFila;
     public ArrayList<Float> chegadas = new ArrayList<>();
     public ArrayList<Float> agendas = new ArrayList<>();
+    public int servidoresOcupados = 0;
 
 
     public ObjetoFila(String intervalo_chegada, String intervalo_atendimento, int K, int servidores, PossivelCaminho[] possiveisCaminhos, String nomeFila){
@@ -33,6 +34,14 @@ public class ObjetoFila {
 
     public void decrementaCliente(){
         clientesAtuais--;
+    }
+
+    public void incrementaServidoresOcupados(){
+        servidoresOcupados++;
+    }
+
+    public void decrementaServidoresOcupados(){
+        servidoresOcupados--;
     }
 
     public int getQntdClientesAtuais(){

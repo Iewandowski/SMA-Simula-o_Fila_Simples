@@ -136,13 +136,15 @@ public class FilaProbabilidade {
 
     public void chegada(float T) {
         setT(T);
+        setaTempoFilas(T);
+        agenda_chegada.remove(0);
+        agenda_movimentacao.remove(0);
+        filas[0].incrementaCliente();
+        filas[0].chegadas.add(T);
+        setTempoAnteriorChegada(T);
         if (filas[0].getQntdClientesAtuais() < filas[0].clientes) {
-            setaTempoFilas(T);
-            filas[0].incrementaCliente();
-            filas[0].chegadas.add(T);
-            setTempoAnteriorChegada(T);
-            agenda_chegada.remove(0);
-            if (filas[0].clientesAtuais <= filas[0].servidores) {
+            if (filas[0].servidoresOcupados < filas[0].servidores) {
+                filas[0].incrementaServidoresOcupados();
                 float proxima_passagem = T + gerarRandom(filas[0].intervalo_atendimento);
                 agenda_movimentacao.add(new TipoOperacao(proxima_passagem, calculaProximaOperacao(filas[0])));
             }
@@ -160,31 +162,41 @@ public class FilaProbabilidade {
     public String calculaProximaOperacao(ObjetoFila fila) {
         float numeroGerado = geradorNumeros.nextFloat();
         for (int i = 0; i < fila.possiveisCaminhos.length; i++) {
+            if (i == fila.possiveisCaminhos.length - 1) {
+                return fila.nomeFila.concat(fila.possiveisCaminhos[i].caminho);
+            }
             if (numeroGerado < fila.possiveisCaminhos[i].probabilidade) {
                 return fila.nomeFila.concat(fila.possiveisCaminhos[i].caminho);
             }
-            if (numeroGerado < (fila.possiveisCaminhos[i].probabilidade
+            if (numeroGerado <= (fila.possiveisCaminhos[i].probabilidade
                     + fila.possiveisCaminhos[i + 1].probabilidade)) {
-                return fila.nomeFila.concat(fila.possiveisCaminhos[i].caminho);
+                return fila.nomeFila.concat(fila.possiveisCaminhos[i + 1].caminho);
             }
         }
         return null;
     }
 
     public void passagemFila(float T, ObjetoFila filaOrigem, ObjetoFila filaDestino) {
-        System.out.println("Entrei aqui Passagem: " + T );
+        // System.out.println("Entrei aqui Passagem: " + T);
         float aux_tempo;
         setT(T);
         setaTempoFilas(T);
         filaOrigem.decrementaCliente();
         agenda_movimentacao.remove(0);
+        // System.out.println(filaOrigem.chegadas.size() + " ACHEIU" +
+        // filaOrigem.nomeFila);
         filaOrigem.chegadas.remove(0);
+        filaOrigem.decrementaServidoresOcupados();
+        // System.out.println(filaOrigem.clientesAtuais + " -- " + filaOrigem.nomeFila);
         if (filaDestino.getQntdClientesAtuais() < filaDestino.clientes) {
             filaDestino.incrementaCliente();
+            // System.out.println(filaDestino.clientesAtuais + " -- " +
+            // filaDestino.nomeFila);
             aux_tempo = T;
             filaDestino.chegadas.add(T);
             setTempoAnteriorPassagem(aux_tempo);
-            if (filaDestino.clientesAtuais <= filaDestino.servidores) {
+            if (filaDestino.servidoresOcupados < filaDestino.servidores) {
+                filaDestino.incrementaServidoresOcupados();
                 agenda_movimentacao
                         .add(new TipoOperacao(T + gerarRandom(filaDestino.intervalo_atendimento),
                                 calculaProximaOperacao(filaDestino)));
@@ -201,13 +213,14 @@ public class FilaProbabilidade {
     }
 
     public void saida(float T, ObjetoFila fila) {
-        System.out.println("Entrei aqui saida: " + T );
+        System.out.println("Entrei aqui saida: " + T);
         setT(T);
         setaTempoFilas(T);
         setTempoAnteriorSaida(T);
         fila.clientesAtuais--;
         fila.chegadas.remove(0);
-        if (fila.clientes >= fila.servidores) {
+        if (fila.servidoresOcupados > fila.servidores) {
+            fila.servidoresOcupados++;
             agenda_movimentacao.add(
                     new TipoOperacao(T + gerarRandom(intervalo_atendimento_fila_dois), calculaProximaOperacao(fila)));
         }
@@ -229,6 +242,7 @@ public class FilaProbabilidade {
 
     public void agendaChegada(float chegada) {
         this.agenda_chegada.add(chegada);
+        this.agenda_movimentacao.add(new TipoOperacao(chegada, "CH1"));
     }
 
     public void agendaPassagemFilaToString() {
@@ -261,13 +275,27 @@ public class FilaProbabilidade {
             System.out.println("====================================================");
             System.out.println();
             int index = 0;
-            for (float tempo_por_quantidade : filas[i].get_tempo_por_quantidade()) {
-                double prob = (tempo_por_quantidade / tempo_global) * 100;
-                String probFormat = String.format("%.4f", prob);
-                System.out.println(
-                        index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
-                                + "%");
-                index++;
+            if (filas[i].get_tempo_por_quantidade().length == 100001) {
+                for (float tempo_por_quantidade : filas[i].get_tempo_por_quantidade()) {
+                    if(tempo_por_quantidade == 0){
+                        break;
+                    }
+                    double prob = (tempo_por_quantidade / tempo_global) * 100;
+                    String probFormat = String.format("%.4f", prob);
+                    System.out.println(
+                            index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
+                                    + "%");
+                    index++;
+                }
+            } else {
+                for (float tempo_por_quantidade : filas[i].get_tempo_por_quantidade()) {
+                    double prob = (tempo_por_quantidade / tempo_global) * 100;
+                    String probFormat = String.format("%.4f", prob);
+                    System.out.println(
+                            index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
+                                    + "%");
+                    index++;
+                }
             }
         }
     }
@@ -284,16 +312,17 @@ public class FilaProbabilidade {
         System.out.println("================EXECUÇÃO NUMERO " + (numeroExecucao + 1) + "===================");
         System.out.println("====================================================");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             Collections.sort(agenda_movimentacao, new ComparadorTiposOperacao());
             if (agenda_chegada.isEmpty()) {
                 System.out.println("Entrei aqui riri");
                 agendaChegada((float) 1.0);
                 chegada(getT());
             }
+            printaOrdemAgenda(agenda_movimentacao, i);
             if (agenda_movimentacao.get(0).tipoOperacao.contains("sa")
                     && agenda_movimentacao.get(0).tempoOperacao < getProximaChegada()) {
-                        System.out.println("Entrei aqui SAIDA");
+                System.out.println("Entrei aqui SAIDA");
 
                 saida(agenda_movimentacao.get(0).tempoOperacao,
                         retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao, true)[0]);
@@ -301,7 +330,6 @@ public class FilaProbabilidade {
             if (!agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("sa")
                     && !agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("ch")
                     && agenda_movimentacao.get(0).tempoOperacao < getProximaChegada()) {
-                        System.out.println("Entrei aqui Passagem");
                 ObjetoFila[] filasPassagem = retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao, false);
                 passagemFila(agenda_movimentacao.get(0).tempoOperacao, filasPassagem[0], filasPassagem[1]);
             } else {
@@ -309,13 +337,13 @@ public class FilaProbabilidade {
             }
         }
         setTempoGlobal(T);
-        //tempoTotalEProbabilidadePorQuantidadetoString();
+        tempoTotalEProbabilidadePorQuantidadetoString();
         return filas;
     }
 
-    public void printaOrdemAgenda(ArrayList<TipoOperacao> tipos , int laco){
+    public void printaOrdemAgenda(ArrayList<TipoOperacao> tipos, int laco) {
         System.out.println("LACO : " + laco);
-        for(int i = 0; i< tipos.size(); i++){
+        for (int i = 0; i < tipos.size(); i++) {
             System.out.println(tipos.get(i).tempoOperacao + " --- " + tipos.get(i).tipoOperacao);
         }
     }
@@ -324,20 +352,22 @@ public class FilaProbabilidade {
         ObjetoFila[] filasRetorno = new ObjetoFila[2];
         if (isSaida) {
             filasRetorno[0] = this.filas[Integer.parseInt(operacao.substring(1, 2)) - 1];
-            return filas;
+            return filasRetorno;
         } else {
             filasRetorno[0] = this.filas[Integer.parseInt(operacao.substring(1, 2)) - 1];
             filasRetorno[1] = this.filas[Integer.parseInt(operacao.substring(3, 4)) - 1];
-            System.out.println(filas[0].nomeFila);
-            return filas;
+            return filasRetorno;
         }
     }
 
     class ComparadorTiposOperacao implements Comparator<TipoOperacao> {
         public int compare(TipoOperacao o1, TipoOperacao o2) {
-            if (o1.tempoOperacao < o2.tempoOperacao) return -1;
-            else if (o1.tempoOperacao > o2.tempoOperacao) return +1;
-            else return 0;
+            if (o1.tempoOperacao < o2.tempoOperacao)
+                return -1;
+            else if (o1.tempoOperacao > o2.tempoOperacao)
+                return +1;
+            else
+                return 0;
         }
     }
 
