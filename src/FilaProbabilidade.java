@@ -25,10 +25,8 @@ public class FilaProbabilidade {
     private int a, c, M;
     private float Xi = 3;
 
-    public FilaProbabilidade(ObjetoFila fila_um, ObjetoFila fila_dois, ObjetoFila fila_tres) {
-        filas[0] = fila_um;
-        filas[1] = fila_dois;
-        filas[2] = fila_tres;
+    public FilaProbabilidade(ObjetoFila[] filas) {
+        this.filas = filas;
         this.geradorNumeros = new Random();
         this.a = Math.abs(geradorNumeros.nextInt(100000) + 100);
         this.c = Math.abs(geradorNumeros.nextInt(100000) + 100);

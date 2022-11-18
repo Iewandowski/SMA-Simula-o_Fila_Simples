@@ -18,7 +18,7 @@ public class App {
 
         // Iniciando leitura de arquivo txt
         FileReader arq = new FileReader(
-                "fila3.txt");
+                "src\\fila3.txt");
         BufferedReader lerArq = new BufferedReader(arq);
         String line;
 
@@ -77,23 +77,24 @@ public class App {
             }
             calculaMediaExecucoesTandem(tempo_execucao, repeticoes, K, K_fila_dois);
 
-        } else if (numero_linhas.size() == 3) {
+        } else if (numero_linhas.size() >= 3) {
             System.out.print("Fila de Probabilidade ");
             String[] split = numero_linhas.get(0).split(",");
             String[] split2 = split[0].split("/");
+            ObjetoFila[] filas = new ObjetoFila[numero_linhas.size()];
 
-            ObjetoFila fila1 = retornaDadosFila(numero_linhas.get(0), true, "F1");
-            ObjetoFila fila2 = retornaDadosFila(numero_linhas.get(0), true, "F2");
-            ObjetoFila fila3 = retornaDadosFila(numero_linhas.get(0), true, "F3");
+            for (int i = 0; i < numero_linhas.size(); i++) {
+                ObjetoFila fila = retornaDadosFila(numero_linhas.get(i), true, "F" + (i + 1));
+                // System.out.println(fila.possiveisCaminhos[i].probabilidade + "Testando");
+                filas[i] = fila;
+            }
 
-            System.out.println(fila1.possiveisCaminhos[0].probabilidade + "Testando");
+            FilaProbabilidade filaProbabilidade = new FilaProbabilidade(filas);
 
-            FilaProbabilidade filaProbabilidade = new FilaProbabilidade(fila1, fila2, fila3);
+            filaProbabilidade.setT((float) 1.0); // primeiro cliente chega no tempo 2.5
+            filaProbabilidade.fila(0);
 
-                filaProbabilidade.setT((float) 1.0); // primeiro cliente chega no tempo 2.5
-                filaProbabilidade.fila(0);
-
-            //calculaMediaExecucoesTandem(fila1,fila2,fila3);
+            // calculaMediaExecucoesTandem(fila1,fila2,fila3);
 
         }
 
@@ -184,7 +185,7 @@ public class App {
             String intervalo_atendimento = split[2];
             int servidores = Integer.parseInt(split_dois[2]);
             int K = Integer.parseInt(split_dois[3]);
-            if(K == 0){
+            if (K == 0) {
                 K = Integer.MAX_VALUE;
             }
 
