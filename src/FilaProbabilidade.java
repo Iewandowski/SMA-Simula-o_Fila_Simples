@@ -160,18 +160,14 @@ public class FilaProbabilidade {
     }
 
     public String calculaProximaOperacao(ObjetoFila fila) {
+        float probabilidadeTotal = 0;
         float numeroGerado = geradorNumeros.nextFloat();
+        System.out.println(numeroGerado + fila.nomeFila);
         for (int i = 0; i < fila.possiveisCaminhos.length; i++) {
-            if (i == fila.possiveisCaminhos.length - 1) {
+            probabilidadeTotal += fila.possiveisCaminhos[i].probabilidade;
+            if(probabilidadeTotal > numeroGerado){
                 return fila.nomeFila.concat(fila.possiveisCaminhos[i].caminho);
-            }
-            if (numeroGerado < fila.possiveisCaminhos[i].probabilidade) {
-                return fila.nomeFila.concat(fila.possiveisCaminhos[i].caminho);
-            }
-            if (numeroGerado <= (fila.possiveisCaminhos[i].probabilidade
-                    + fila.possiveisCaminhos[i + 1].probabilidade)) {
-                return fila.nomeFila.concat(fila.possiveisCaminhos[i + 1].caminho);
-            }
+            }      
         }
         return null;
     }
