@@ -18,7 +18,7 @@ public class App {
 
         // Iniciando leitura de arquivo txt
         FileReader arq = new FileReader(
-                "src\\fila3.txt");
+                "fila3.txt");
         BufferedReader lerArq = new BufferedReader(arq);
         String line;
 
@@ -79,16 +79,14 @@ public class App {
 
         } else if (numero_linhas.size() >= 3) {
             System.out.print("Fila de Probabilidade ");
-            String[] split = numero_linhas.get(0).split(",");
-            String[] split2 = split[0].split("/");
             ObjetoFila[] filas = new ObjetoFila[numero_linhas.size()];
+            ObjetoFila fila = retornaDadosFila(numero_linhas.get(0), true, "F" + (1));
+            filas[0] = fila;
 
-            for (int i = 0; i < numero_linhas.size(); i++) {
-                ObjetoFila fila = retornaDadosFila(numero_linhas.get(i), true, "F" + (i + 1));
-                // System.out.println(fila.possiveisCaminhos[i].probabilidade + "Testando");
-                filas[i] = fila;
+            for (int i = 1; i < numero_linhas.size(); i++) {
+                    fila = retornaDadosFila(numero_linhas.get(i), false, "F" + (i + 1));
+                    filas[i] = fila;
             }
-
             FilaProbabilidade filaProbabilidade = new FilaProbabilidade(filas);
 
             filaProbabilidade.setT((float) 1.0); // primeiro cliente chega no tempo 2.5
@@ -191,7 +189,7 @@ public class App {
 
             PossivelCaminho[] destinos = new PossivelCaminho[(split.length - 3) / 2];
             for (int i = 3; i < split.length; i = i + 2) {
-                destinos[index] = new PossivelCaminho(split[i], Double.parseDouble(split[i + 1]));
+                destinos[index] = new PossivelCaminho(split[i], Float.parseFloat(split[i + 1]));
                 index++;
             }
             return new ObjetoFila(chegada_intervalo, intervalo_atendimento, servidores, K, destinos, nomeFila);
