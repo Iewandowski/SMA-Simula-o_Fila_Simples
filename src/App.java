@@ -165,11 +165,15 @@ public class App {
         // Atribuindo informações de txt às variaveis
         String[] split = linha.split(",");
         String[] split_dois = split[0].split("/");
-
+        int K = 0;
         if (!contemChegada) {
             String intervalo_atendimento = split[1];
             int servidores = Integer.parseInt(split_dois[2]);
-            int K = Integer.parseInt(split_dois[3]);
+            if(split_dois.length == 3){
+                K = 100000;
+            }else{
+                K = Integer.parseInt(split_dois[3]);
+            }
 
             PossivelCaminho[] destinos = new PossivelCaminho[(split.length - 2) / 2];
 
@@ -182,9 +186,10 @@ public class App {
             String chegada_intervalo = split[1];
             String intervalo_atendimento = split[2];
             int servidores = Integer.parseInt(split_dois[2]);
-            int K = Integer.parseInt(split_dois[3]);
-            if (K == 0) {
+            if(split_dois.length == 3){
                 K = 100000;
+            }else{
+                K = Integer.parseInt(split_dois[3]);
             }
 
             PossivelCaminho[] destinos = new PossivelCaminho[(split.length - 3) / 2];

@@ -201,7 +201,9 @@ public class FilaProbabilidade {
     }
 
     public void setaTempoFilas(float T) {
+        System.out.println("Tempo global: " + T);
         for (int i = 0; i < filas.length; i++) {
+            System.out.println("Chegada: " + getTempoAnteriorChegada() + " Saida" + getTempoAnteriorSaida() + " Passagem:" + getTempoAnteriorPassagem());
             filas[i].get_tempo_por_quantidade()[filas[i].getQntdClientesAtuais()] += (T
                     - Math.max(getTempoAnteriorChegada(),
                             Math.max(getTempoAnteriorSaida(), getTempoAnteriorPassagem())));
@@ -374,6 +376,40 @@ public class FilaProbabilidade {
         System.out.println("Ultima chegada: " + getTempoAnteriorChegada());
         System.out.println("Ultima passagem: " + getTempoAnteriorPassagem());
         System.out.println("Ultima saída: " + getTempoAnteriorSaida());
+        for (int i = 0; i < filas.length; i++) {
+            System.out.println("****************************************************");
+            System.out.println("\t\t\tFila " + i);
+            System.out.println("****************************************************");
+            System.out.println("****************************************************");
+            System.out.println("Tempo Total: " + tempo_global);
+            System.out.println("****************************************************");
+            System.out.println("Estado\t\tTempo\t\t\tProbabilidade");
+            System.out.println("====================================================");
+            System.out.println();
+            int index = 0;
+            if (filas[i].get_tempo_por_quantidade().length == 100001) {
+                for (float tempo_por_quantidade : filas[i].get_tempo_por_quantidade()) {
+                    if(tempo_por_quantidade == 0){
+                        break;
+                    }
+                    double prob = (tempo_por_quantidade / tempo_global) * 100;
+                    String probFormat = String.format("%.4f", prob);
+                    System.out.println(
+                            index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
+                                    + "%");
+                    index++;
+                }
+            } else {
+                for (float tempo_por_quantidade : filas[i].get_tempo_por_quantidade()) {
+                    double prob = (tempo_por_quantidade / tempo_global) * 100;
+                    String probFormat = String.format("%.4f", prob);
+                    System.out.println(
+                            index + "\t\t" + tempo_por_quantidade + "\t\t" + probFormat
+                                    + "%");
+                    index++;
+                }
+            }
+        }
         System.out.println("--------------------");
     }
 
