@@ -177,14 +177,14 @@ public class App {
                 destinos[index] = new PossivelCaminho(split[i], Double.parseDouble(split[i + 1]));
                 index++;
             }
-            return new ObjetoFila(" ", intervalo_atendimento, servidores, K, destinos, nomeFila);
+            return new ObjetoFila(" ", intervalo_atendimento, K, servidores, destinos, nomeFila);
         } else {
             String chegada_intervalo = split[1];
             String intervalo_atendimento = split[2];
             int servidores = Integer.parseInt(split_dois[2]);
             int K = Integer.parseInt(split_dois[3]);
             if (K == 0) {
-                K = Integer.MAX_VALUE;
+                K = 100000;
             }
 
             PossivelCaminho[] destinos = new PossivelCaminho[(split.length - 3) / 2];
@@ -192,7 +192,7 @@ public class App {
                 destinos[index] = new PossivelCaminho(split[i], Float.parseFloat(split[i + 1]));
                 index++;
             }
-            return new ObjetoFila(chegada_intervalo, intervalo_atendimento, servidores, K, destinos, nomeFila);
+            return new ObjetoFila(chegada_intervalo, intervalo_atendimento, K, servidores, destinos, nomeFila);
         }
     }
 

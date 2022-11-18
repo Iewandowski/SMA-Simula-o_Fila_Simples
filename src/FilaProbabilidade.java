@@ -130,6 +130,7 @@ public class FilaProbabilidade {
         }
         float proxima_chegada = T + gerarRandom(filas[0].intervalo_chegada);
         agenda_chegada.add(proxima_chegada);
+        setProximaChegada(proxima_chegada);
         agenda_movimentacao.add(new TipoOperacao(proxima_chegada, "CH1"));
     }
 
@@ -283,14 +284,13 @@ public class FilaProbabilidade {
         System.out.println("================EXECUÇÃO NUMERO " + (numeroExecucao + 1) + "===================");
         System.out.println("====================================================");
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 10; i++) {
             Collections.sort(agenda_movimentacao, new ComparadorTiposOperacao());
             if (agenda_chegada.isEmpty()) {
                 System.out.println("Entrei aqui riri");
                 agendaChegada((float) 1.0);
                 chegada(getT());
             }
-            // printaOrdemAgenda(agenda_movimentacao, i);
             if (agenda_movimentacao.get(0).tipoOperacao.contains("sa")
                     && agenda_movimentacao.get(0).tempoOperacao < getProximaChegada()) {
                         System.out.println("Entrei aqui SAIDA");
@@ -309,7 +309,7 @@ public class FilaProbabilidade {
             }
         }
         setTempoGlobal(T);
-        tempoTotalEProbabilidadePorQuantidadetoString();
+        //tempoTotalEProbabilidadePorQuantidadetoString();
         return filas;
     }
 
