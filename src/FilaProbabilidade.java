@@ -240,7 +240,7 @@ public class FilaProbabilidade {
     public void tempoTotalEProbabilidadePorQuantidadetoString() {
         for (int i = 0; i < filas.length; i++) {
             System.out.println("****************************************************");
-            System.out.println("\t\t\tFila " + i);
+            System.out.println("\t\t\tFila " + (i + 1));
             System.out.println("****************************************************");
             System.out.println("****************************************************");
             System.out.println("Tempo Total: " + tempo_global);

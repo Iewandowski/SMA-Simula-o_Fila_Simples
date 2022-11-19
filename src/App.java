@@ -89,7 +89,6 @@ public class App {
 
             filaProbabilidade.setT((float) 1.0); // primeiro cliente chega no tempo 2.5
             filaProbabilidade.fila(0);
-            // calculaMediaExecucoesTandem(fila1,fila2,fila3);
         }
         lerArq.close();
     }
