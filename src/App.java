@@ -18,7 +18,7 @@ public class App {
 
         // Iniciando leitura de arquivo txt
         FileReader arq = new FileReader(
-                "fila3.txt");
+                "src\\fila3.txt");
         BufferedReader lerArq = new BufferedReader(arq);
         String line;
 
@@ -78,24 +78,19 @@ public class App {
             calculaMediaExecucoesTandem(tempo_execucao, repeticoes, K, K_fila_dois);
 
         } else if (numero_linhas.size() >= 3) {
-            System.out.print("Fila de Probabilidade ");
+            System.out.println("Fila de Espera ");
             ObjetoFila[] filas = new ObjetoFila[numero_linhas.size()];
-            ObjetoFila fila = retornaDadosFila(numero_linhas.get(0), true, "F" + (1));
-            filas[0] = fila;
 
-            for (int i = 1; i < numero_linhas.size(); i++) {
-                    fila = retornaDadosFila(numero_linhas.get(i), false, "F" + (i + 1));
-                    filas[i] = fila;
+            for (int i = 0; i < numero_linhas.size(); i++) {
+                ObjetoFila fila = retornaDadosFila(numero_linhas.get(i), false, "F" + (i + 1));
+                filas[i] = fila;
             }
             FilaProbabilidade filaProbabilidade = new FilaProbabilidade(filas);
 
             filaProbabilidade.setT((float) 1.0); // primeiro cliente chega no tempo 2.5
             filaProbabilidade.fila(0);
-
             // calculaMediaExecucoesTandem(fila1,fila2,fila3);
-
         }
-
         lerArq.close();
     }
 
@@ -162,16 +157,27 @@ public class App {
 
     public static ObjetoFila retornaDadosFila(String linha, boolean contemChegada, String nomeFila) {
         int index = 0;
+        int aux = 0;
         // Atribuindo informações de txt às variaveis
         String[] split = linha.split(",");
         String[] split_dois = split[0].split("/");
         int K = 0;
+
+        for (int i = 0; i < split.length; i++) {
+            if (split[i].contains(".."))
+                aux++;
+        }
+
+        if (aux > 1) {
+            contemChegada = true;
+        }
+
         if (!contemChegada) {
             String intervalo_atendimento = split[1];
             int servidores = Integer.parseInt(split_dois[2]);
-            if(split_dois.length == 3){
+            if (split_dois.length == 3) {
                 K = 100000;
-            }else{
+            } else {
                 K = Integer.parseInt(split_dois[3]);
             }
 
@@ -181,14 +187,14 @@ public class App {
                 destinos[index] = new PossivelCaminho(split[i], Double.parseDouble(split[i + 1]));
                 index++;
             }
-            return new ObjetoFila(" ", intervalo_atendimento, K, servidores, destinos, nomeFila);
+            return new ObjetoFila(null, intervalo_atendimento, K, servidores, destinos, nomeFila);
         } else {
             String chegada_intervalo = split[1];
             String intervalo_atendimento = split[2];
             int servidores = Integer.parseInt(split_dois[2]);
-            if(split_dois.length == 3){
+            if (split_dois.length == 3) {
                 K = 100000;
-            }else{
+            } else {
                 K = Integer.parseInt(split_dois[3]);
             }
 

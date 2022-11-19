@@ -120,25 +120,25 @@ public class FilaProbabilidade {
         agenda_movimentacao.add(new TipoOperacao(proxima_chegada, "CH1"));
     }
 
-    public void chegada(float T) {
+    public void chegada(float T, int numero_fila) {
         setT(T);
-        if (filas[0].getQntdClientesAtuais() < filas[0].clientes) {
+        if (filas[numero_fila].getQntdClientesAtuais() < filas[numero_fila].clientes) {
             setaTempoFilas(T);
             setTempoAnteriorChegada(T);
             agenda_chegada.remove(0);
             agenda_movimentacao.remove(0);
-            filas[0].incrementaCliente();
-            filas[0].chegadas.add(T);
-            if (filas[0].servidoresOcupados < filas[0].servidores) {
-                filas[0].incrementaServidoresOcupados();
-                float proxima_passagem = T + gerarRandom(filas[0].intervalo_atendimento);
-                agenda_movimentacao.add(new TipoOperacao(proxima_passagem, calculaProximaOperacao(filas[0])));
+            filas[numero_fila].incrementaCliente();
+            filas[numero_fila].chegadas.add(T);
+            if (filas[numero_fila].servidoresOcupados < filas[numero_fila].servidores) {
+                filas[numero_fila].incrementaServidoresOcupados();
+                float proxima_passagem = T + gerarRandom(filas[numero_fila].intervalo_atendimento);
+                agenda_movimentacao.add(new TipoOperacao(proxima_passagem, calculaProximaOperacao(filas[numero_fila])));
             }
             agendarProximaChegada();
-        } else if (agenda_movimentacao.size() < filas[0].servidores) {
-            float proxima_passagem = T + gerarRandom(filas[0].intervalo_atendimento);
+        } else if (agenda_movimentacao.size() < filas[numero_fila].servidores) {
+            float proxima_passagem = T + gerarRandom(filas[numero_fila].intervalo_atendimento);
             agenda_chegada.remove(0);
-            agenda_movimentacao.add(new TipoOperacao(proxima_passagem, calculaProximaOperacao(filas[0])));
+            agenda_movimentacao.add(new TipoOperacao(proxima_passagem, calculaProximaOperacao(filas[numero_fila])));
             agendarProximaChegada();
         } else {
             agendarProximaChegada();
@@ -282,29 +282,36 @@ public class FilaProbabilidade {
             this.filas[i].set_tempo_por_quantidade(new float[this.filas[i].clientes + 1]);
         }
 
-        System.out.println("====================================================");
-        System.out.println("================EXECUÇÃO NUMERO " + (numeroExecucao + 1) + "===================");
-        System.out.println("====================================================");
-
-        for (int i = 0; i < 100000; i++) {
-            Collections.sort(agenda_movimentacao, new ComparadorTiposOperacao());
-            if (agenda_chegada.isEmpty()) {
-                agendaChegada((float) 1.0);
-                chegada(getT());
+        for (int j = 0; j < filas.length; j++) {
+            if (filas[j].contemChegada()) {
+                System.out.println("====================================================");
+                System.out.println("================CHEGADA DA FILA " + (j + 1) + "===================");
+                System.out.println("====================================================");
+                for (int i = 0; i < 100000; i++) {
+                    Collections.sort(agenda_movimentacao, new ComparadorTiposOperacao());
+                    if (agenda_chegada.isEmpty()) {
+                        if (filas[j].contemChegada()) {
+                            agendaChegada((float) 1.0);
+                            chegada(getT(), j);
+                        }
+                    }
+                    if (agenda_movimentacao.get(0).tipoOperacao.contains("sa")) {
+                        saida(agenda_movimentacao.get(0).tempoOperacao,
+                                retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao, true)[0]);
+                    } else if (!agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("sa")
+                            && !agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("ch")) {
+                        ObjetoFila[] filasPassagem = retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao,
+                                false);
+                        passagemFila(agenda_movimentacao.get(0).tempoOperacao, filasPassagem[0], filasPassagem[1]);
+                    } else {
+                        chegada(getProximaChegada(), j);
+                    }
+                }
+                setTempoGlobal(T);
+                tempoTotalEProbabilidadePorQuantidadetoString();
             }
-            if (agenda_movimentacao.get(0).tipoOperacao.contains("sa")) {
-                saida(agenda_movimentacao.get(0).tempoOperacao,
-                        retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao, true)[0]);
-            } else if (!agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("sa")
-                    && !agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("ch")) {
-                ObjetoFila[] filasPassagem = retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao, false);
-                passagemFila(agenda_movimentacao.get(0).tempoOperacao, filasPassagem[0], filasPassagem[1]);
-            } else {
-                chegada(getProximaChegada());
-            }
+            zerarAlgoritmo();
         }
-        setTempoGlobal(T);
-        tempoTotalEProbabilidadePorQuantidadetoString();
         return filas;
     }
 
