@@ -296,7 +296,6 @@ public class FilaProbabilidade {
     }
 
     public ObjetoFila[] fila(int numeroExecucao) {
-        System.out.println(tipoRede);
         if (tipoRede == Rede.Aberta) {
             System.out.println("FILA DE REDE ABERTA");
 
@@ -403,6 +402,9 @@ public class FilaProbabilidade {
     }
 
     public void calculaTaxaDeVisita(ObjetoFila[] filas) {
+        System.out.println("====================================================");
+        System.out.println("==================TAXA DE VISITA====================");
+        System.out.println("====================================================");
         String[] sFilas = new String[filas.length];
         ArrayList<TaxaVisita> taxaVisita = new ArrayList<TaxaVisita>();
         for (int i = 0; i < filas.length; i++) {
