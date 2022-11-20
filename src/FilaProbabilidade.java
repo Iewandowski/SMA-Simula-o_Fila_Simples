@@ -4,6 +4,11 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class FilaProbabilidade {
+
+    public enum Rede {
+        Aberta, Fechada;
+    }
+
     public int K, servidores, servidores_fila_dois, K_fila_dois;
     public float tempo_cliente, T;
     String intervalo_chegada, intervalo_atendimento, intervalo_atendimento_fila_dois, intervalo_chegada_fila_dois;
@@ -20,6 +25,7 @@ public class FilaProbabilidade {
     Random geradorNumeros;
     private int a, c, M;
     private float Xi = 3;
+    public Rede tipoRede;
 
     public FilaProbabilidade(ObjetoFila[] filas) {
         this.filas = filas;
@@ -27,6 +33,21 @@ public class FilaProbabilidade {
         this.a = Math.abs(geradorNumeros.nextInt(100000) + 100);
         this.c = Math.abs(geradorNumeros.nextInt(100000) + 100);
         this.M = Math.abs(geradorNumeros.nextInt(100000) + 100);
+        verificaRede(filas);
+    }
+
+    public void verificaRede(ObjetoFila[] filas) {
+        for (int i = 0; i < filas.length; i++) {
+            if (filas[i].contemChegada()) {
+                this.tipoRede = Rede.Aberta;
+                return;
+            }
+        }
+        this.tipoRede = Rede.Fechada;
+    }
+
+    public Rede getTipoRede() {
+        return this.tipoRede;
     }
 
     public float getTempoGlobal() {
@@ -275,42 +296,51 @@ public class FilaProbabilidade {
     }
 
     public ObjetoFila[] fila(int numeroExecucao) {
-        if (numeroExecucao >= 1) {
-            zerarAlgoritmo();
-        }
-        for (int i = 0; i < filas.length; i++) {
-            this.filas[i].set_tempo_por_quantidade(new float[this.filas[i].clientes + 1]);
-        }
+        System.out.println(tipoRede);
+        if (tipoRede == Rede.Aberta) {
+            System.out.println("FILA DE REDE ABERTA");
 
-        for (int j = 0; j < filas.length; j++) {
-            if (filas[j].contemChegada()) {
-                System.out.println("====================================================");
-                System.out.println("================CHEGADA DA FILA " + (j + 1) + "===================");
-                System.out.println("====================================================");
-                for (int i = 0; i < 100000; i++) {
-                    Collections.sort(agenda_movimentacao, new ComparadorTiposOperacao());
-                    if (agenda_chegada.isEmpty()) {
-                        if (filas[j].contemChegada()) {
+            for (int i = 0; i < filas.length; i++) {
+                this.filas[i].set_tempo_por_quantidade(new float[this.filas[i].clientes + 1]);
+            }
+
+            for (int j = 0; j < filas.length; j++) {
+                if (filas[j].contemChegada()) {
+                    System.out.println("====================================================");
+                    System.out.println("================CHEGADA DA FILA " + (j + 1) + "===================");
+                    System.out.println("====================================================");
+                    for (int i = 0; i < 100000; i++) {
+                        Collections.sort(agenda_movimentacao, new ComparadorTiposOperacao());
+                        if (agenda_chegada.isEmpty()) {
                             agendaChegada((float) 1.0);
                             chegada(getT(), j);
                         }
+                        if (agenda_movimentacao.get(0).tipoOperacao.contains("sa")) {
+                            saida(agenda_movimentacao.get(0).tempoOperacao,
+                                    retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao, true)[0]);
+                        } else if (!agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("sa")
+                                && !agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("ch")) {
+                            ObjetoFila[] filasPassagem = retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao,
+                                    false);
+                            passagemFila(agenda_movimentacao.get(0).tempoOperacao, filasPassagem[0], filasPassagem[1]);
+                        } else {
+                            chegada(getProximaChegada(), j);
+                        }
                     }
-                    if (agenda_movimentacao.get(0).tipoOperacao.contains("sa")) {
-                        saida(agenda_movimentacao.get(0).tempoOperacao,
-                                retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao, true)[0]);
-                    } else if (!agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("sa")
-                            && !agenda_movimentacao.get(0).tipoOperacao.toLowerCase().contains("ch")) {
-                        ObjetoFila[] filasPassagem = retornaFilasOperacao(agenda_movimentacao.get(0).tipoOperacao,
-                                false);
-                        passagemFila(agenda_movimentacao.get(0).tempoOperacao, filasPassagem[0], filasPassagem[1]);
-                    } else {
-                        chegada(getProximaChegada(), j);
-                    }
+                    setTempoGlobal(T);
+                    tempoTotalEProbabilidadePorQuantidadetoString();
                 }
-                setTempoGlobal(T);
-                tempoTotalEProbabilidadePorQuantidadetoString();
+                zerarAlgoritmo();
             }
-            zerarAlgoritmo();
+        } else if (tipoRede == Rede.Fechada) {
+            System.out.println("FILA DE REDE FECHADA");
+            for (int i = 0; i < 100000; i++) {
+
+                if (agenda_chegada.isEmpty()) {
+                    agenda_movimentacao.add(null);
+                }
+            }
+            calculaTaxaDeVisita(filas);
         }
         return filas;
     }
@@ -371,4 +401,45 @@ public class FilaProbabilidade {
         }
         return false;
     }
+
+    public void calculaTaxaDeVisita(ObjetoFila[] filas) {
+        String[] sFilas = new String[filas.length];
+        ArrayList<TaxaVisita> taxaVisita = new ArrayList<TaxaVisita>();
+        for (int i = 0; i < filas.length; i++) {
+            sFilas[i] = "f" + (i + 1);
+        }
+        int[] v = new int[filas.length];
+        for (int i = 0; i < filas.length; i++) {
+            for (int j = 0; j < filas.length; j++) {
+                for (int k = 0; k < filas[j].possiveisCaminhos.length; k++) {
+                    if (sFilas[i].equals(filas[j].possiveisCaminhos[k].caminho)) {
+                        TaxaVisita aux = new TaxaVisita(i, filas[j].possiveisCaminhos[k].probabilidade, j);
+                        taxaVisita.add(aux);
+                    }
+                }
+            }
+        }
+        double[] valores = new double[filas.length];
+        valores[0] = 1;
+        String[] sValores = new String[filas.length];
+        for (TaxaVisita taxa : taxaVisita) {
+            if (sValores[taxa.n_fila] == null) {
+                sValores[taxa.n_fila] = "";
+                sValores[taxa.n_fila] += taxa.probabilidade_rotacao + " x V" + (taxa.recebe + 1)
+                        + " + ";
+            } else {
+                // valores[taxa.n_fila] += taxa.probabilidade_rotacao * valores[taxa.recebe];
+                sValores[taxa.n_fila] += taxa.probabilidade_rotacao + " x V" + (taxa.recebe + 1)
+                        + " + ";
+
+            }
+        }
+
+        int i = 1;
+        for (String valor_fila : sValores) {
+            System.out.println("V" + i + "= " + valor_fila);
+            i++;
+        }
+    }
+
 }
